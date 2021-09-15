@@ -274,7 +274,7 @@ overview_display
 ![](BSRI_analysis_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->
 
 ``` r
-ggsave(here::here("graphs","Figure-1.pdf"), width=16, height=12, units="cm")
+ggsave(here::here("graphs","Figure-1.pdf"), width=11.4, height=8, units="cm")
 ```
 
 ## Histograms for each country (Figure in Supporting Information)
@@ -1986,7 +1986,7 @@ country_param_plot + selfish_crime + histogram_agree_conditional + crime_mobilit
 
 ``` r
 ggsave(here::here("graphs", "Figure-2.pdf"),
-       width = 16, height = 10, units = "cm")
+       width = 17.8, height = 11, units = "cm")
 ```
 
     ## `geom_smooth()` using formula 'y ~ x'
@@ -4497,7 +4497,7 @@ within_display
 ![](BSRI_analysis_files/figure-gfm/unnamed-chunk-58-1.png)<!-- -->
 
 ``` r
-ggsave(here::here("graphs","Figure-3.pdf"), width=16, height=16, units="cm")
+ggsave(here::here("graphs","Figure-3.pdf"), width=11.4, height=12, units="cm")
 ```
 
 ## Polarization for each country (Figure in Supporting Information)
@@ -5453,6 +5453,126 @@ WPsr2 %>%
 
 The lasso analysis is run with the `lasso_within.do` file.
 
+### Separate within country regressions
+
+We can run the regressions (full specification) within each country
+
+``` r
+att2fn <- function(df) {
+  lm2 <- lm_robust(inequality_unfair ~ more_selfish + inc_rank_oecd1 + binary_education_high + 
+              d_male + z_age + d_married + z_n_children + 
+              d_immigrant + d_working + d_urban , data=df, weights=wgt,
+            clusters=psuid, se_type="stata")
+}
+att5fn <- function(df) {
+  lm5 <- lm_robust(gov_should_reduce_inequality ~ more_selfish + inc_rank_oecd1 + 
+              binary_education_high + d_male + z_age + d_married + z_n_children + 
+              d_immigrant + d_working + d_urban, data=df, weights=wgt,
+            clusters=psuid, se_type="stata")
+}
+att2_params <- WPsr  %>%
+  nest(-iso_a3) %>%
+  mutate(fit = map(data, att2fn),
+      tidied = map(fit, tidy)) %>%
+  unnest(tidied)
+```
+
+    ## 1 coefficient  not defined because the design matrix is rank deficient
+    ## 
+    ## 1 coefficient  not defined because the design matrix is rank deficient
+    ## 
+    ## 1 coefficient  not defined because the design matrix is rank deficient
+    ## 
+    ## 1 coefficient  not defined because the design matrix is rank deficient
+    ## 
+    ## 1 coefficient  not defined because the design matrix is rank deficient
+    ## 
+    ## 1 coefficient  not defined because the design matrix is rank deficient
+    ## 
+    ## 1 coefficient  not defined because the design matrix is rank deficient
+    ## 
+    ## 1 coefficient  not defined because the design matrix is rank deficient
+    ## 
+    ## 1 coefficient  not defined because the design matrix is rank deficient
+    ## 
+    ## 1 coefficient  not defined because the design matrix is rank deficient
+    ## 
+    ## 1 coefficient  not defined because the design matrix is rank deficient
+    ## 
+    ## 1 coefficient  not defined because the design matrix is rank deficient
+
+``` r
+att5_params <- WPsr  %>%
+  nest(-iso_a3) %>%
+  mutate(fit = map(data, att5fn),
+      tidied = map(fit, tidy)) %>%
+  unnest(tidied)
+```
+
+    ## 1 coefficient  not defined because the design matrix is rank deficient
+    ## 
+    ## 1 coefficient  not defined because the design matrix is rank deficient
+    ## 
+    ## 1 coefficient  not defined because the design matrix is rank deficient
+    ## 
+    ## 1 coefficient  not defined because the design matrix is rank deficient
+    ## 
+    ## 1 coefficient  not defined because the design matrix is rank deficient
+    ## 
+    ## 1 coefficient  not defined because the design matrix is rank deficient
+    ## 
+    ## 1 coefficient  not defined because the design matrix is rank deficient
+    ## 
+    ## 1 coefficient  not defined because the design matrix is rank deficient
+    ## 
+    ## 1 coefficient  not defined because the design matrix is rank deficient
+    ## 
+    ## 1 coefficient  not defined because the design matrix is rank deficient
+    ## 
+    ## 1 coefficient  not defined because the design matrix is rank deficient
+    ## 
+    ## 1 coefficient  not defined because the design matrix is rank deficient
+    ## 
+    ## 1 coefficient  not defined because the design matrix is rank deficient
+
+``` r
+att2_fig <- att2_params %>% dplyr::select(iso_a3, term, estimate, std.error) %>%
+  filter(term == "more_selfish") %>%
+  mutate(country = countrycode(iso_a3, "iso3c", "country.name")) %>%
+  fatwo_rcfigure(estimate, std.error, country, hline=0,
+                 ytitle = "Coefficient on Belief in Selfish Rich \u00B1 s.e.",
+                 title = "Agreement with 'Current inequality is unfair'",
+                 path = here::here("graphs","SR_inequality_unfair_selfishness_coef_joint.pdf"))
+att2_fig
+```
+
+![](BSRI_analysis_files/figure-gfm/unnamed-chunk-69-1.png)<!-- -->
+
+``` r
+att5_fig <- att5_params %>% dplyr::select(iso_a3, term, estimate, std.error) %>%
+  filter(term == "more_selfish") %>% 
+  mutate(country = countrycode(iso_a3, "iso3c", "country.name")) %>%
+  fatwo_rcfigure(estimate, std.error, country, hline = 0,
+                 ytitle = "Coefficient on Belief in Selfish Rich \u00B1 s.e.",
+                 title = "Agreement with 'Government should aim to reduce inequality'",
+                 path = here::here("graphs","SR_gov_should_reduce_inequality_selfishness_coef_joint.pdf"))
+att5_fig
+```
+
+![](BSRI_analysis_files/figure-gfm/unnamed-chunk-70-1.png)<!-- -->
+
+Combining these with patchwork:
+
+``` r
+att2_fig / att5_fig + plot_annotation(tag_levels = 'a')
+```
+
+![](BSRI_analysis_files/figure-gfm/unnamed-chunk-71-1.png)<!-- -->
+
+``` r
+ggsave(here::here("graphs", "SR_attitude_coefs_combined.pdf"), width=16, height = 20, units="cm")
+```
+
 # The role of religion (Table for Supporting Information)
 
 The question on the role of religion in daily life was not asked in a
@@ -6213,7 +6333,7 @@ world_giving_c1
 
     ## Warning: Removed 1 rows containing missing values (geom_text).
 
-![](BSRI_analysis_files/figure-gfm/unnamed-chunk-74-1.png)<!-- -->
+![](BSRI_analysis_files/figure-gfm/unnamed-chunk-78-1.png)<!-- -->
 
 What does the regression line look like?
 

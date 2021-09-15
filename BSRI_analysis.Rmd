@@ -167,7 +167,7 @@ CCC
 "
 overview_display <- gl_hist + E8 + averages_with_se + plot_annotation(tag_levels = 'a') + plot_layout(design=overview_layout)
 overview_display
-ggsave(here::here("graphs","Figure-1.pdf"), width=16, height=12, units="cm")
+ggsave(here::here("graphs","Figure-1.pdf"), width=11.4, height=8, units="cm")
 ```
 
 ## Histograms for each country (Figure in Supporting Information)
@@ -543,7 +543,7 @@ linearHypothesis(reg_crime_mobility, "more_criminal = 0")
 country_param_plot + selfish_crime + histogram_agree_conditional + crime_mobility + 
   plot_annotation(tag_levels = 'a')
 ggsave(here::here("graphs", "Figure-2.pdf"),
-       width = 16, height = 10, units = "cm")
+       width = 17.8, height = 11, units = "cm")
 ```
 
 ## Robustness of cross country analysis wrt WDI governance indicators (Table in Supporting Information)
@@ -963,7 +963,7 @@ within_display <- polarization_selfish_rich + within_plot +
   plot_annotation(tag_levels = 'a') + 
   plot_layout(design=within_layout)
 within_display
-ggsave(here::here("graphs","Figure-3.pdf"), width=16, height=16, units="cm")
+ggsave(here::here("graphs","Figure-3.pdf"), width=11.4, height=12, units="cm")
 ```
 
 ## Polarization for each country (Figure in Supporting Information)
@@ -1151,6 +1151,65 @@ WPsr2 %>%
 ```
 
 The lasso analysis is run with the `lasso_within.do` file.
+
+### Separate within country regressions
+
+We can run the regressions (full specification) within each country
+```{r warning=FALSE}
+att2fn <- function(df) {
+  lm2 <- lm_robust(inequality_unfair ~ more_selfish + inc_rank_oecd1 + binary_education_high + 
+              d_male + z_age + d_married + z_n_children + 
+              d_immigrant + d_working + d_urban , data=df, weights=wgt,
+            clusters=psuid, se_type="stata")
+}
+att5fn <- function(df) {
+  lm5 <- lm_robust(gov_should_reduce_inequality ~ more_selfish + inc_rank_oecd1 + 
+              binary_education_high + d_male + z_age + d_married + z_n_children + 
+              d_immigrant + d_working + d_urban, data=df, weights=wgt,
+            clusters=psuid, se_type="stata")
+}
+att2_params <- WPsr  %>%
+  nest(-iso_a3) %>%
+  mutate(fit = map(data, att2fn),
+      tidied = map(fit, tidy)) %>%
+  unnest(tidied)
+att5_params <- WPsr  %>%
+  nest(-iso_a3) %>%
+  mutate(fit = map(data, att5fn),
+      tidied = map(fit, tidy)) %>%
+  unnest(tidied)
+```
+
+
+```{r}
+att2_fig <- att2_params %>% dplyr::select(iso_a3, term, estimate, std.error) %>%
+  filter(term == "more_selfish") %>%
+  mutate(country = countrycode(iso_a3, "iso3c", "country.name")) %>%
+  fatwo_rcfigure(estimate, std.error, country, hline=0,
+                 ytitle = "Coefficient on Belief in Selfish Rich \u00B1 s.e.",
+                 title = "Agreement with 'Current inequality is unfair'",
+                 path = here::here("graphs","SR_inequality_unfair_selfishness_coef_joint.pdf"))
+att2_fig
+```
+
+```{r}
+att5_fig <- att5_params %>% dplyr::select(iso_a3, term, estimate, std.error) %>%
+  filter(term == "more_selfish") %>% 
+  mutate(country = countrycode(iso_a3, "iso3c", "country.name")) %>%
+  fatwo_rcfigure(estimate, std.error, country, hline = 0,
+                 ytitle = "Coefficient on Belief in Selfish Rich \u00B1 s.e.",
+                 title = "Agreement with 'Government should aim to reduce inequality'",
+                 path = here::here("graphs","SR_gov_should_reduce_inequality_selfishness_coef_joint.pdf"))
+att5_fig
+```
+
+
+Combining these with patchwork:
+```{r}
+att2_fig / att5_fig + plot_annotation(tag_levels = 'a')
+ggsave(here::here("graphs", "SR_attitude_coefs_combined.pdf"), width=16, height = 20, units="cm")
+```
+
 
 
 
