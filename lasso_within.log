@@ -1,0 +1,166 @@
+-------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  /g4pool/eos/Documents/gits/BSRI/lasso_within.log
+  log type:  text
+ opened on:  15 Sep 2021, 11:14:19
+
+. 
+. use WPsr2, clear
+
+. keep inequality_unfair gov_should_reduce_inequality more_selfish ///    
+>   inc_rank_oecd1 binary_education_high d_female z_age d_married ///
+>   z_n_children d_immigrant d_working d_urban iso_a3 psuid
+
+. 
+. egen country = group(iso_a3)
+
+. local xlist = "inc_rank_oecd1 binary_education_high d_female z_age d_married 
+> z_n_children d_immigrant d_working d_urban"
+
+. 
+. local i=0
+
+. foreach x1 in `xlist' {
+  2.         local j=0
+  3.         gen xx_`i' = `x1'
+  4.         foreach x2 in `xlist' {
+  5.                 if `j'>=`i' {
+  6.                         gen xx_`i'_`j' = `x1'*`x2'
+  7.                 }
+  8.                 local j=`j'+1
+  9.         }
+ 10.         local i=`i'+1
+ 11. }
+
+. 
+. // Adding vce(cluster psuid) fails with r(134), "too many values"
+. xporegress inequality_unfair more_selfish, cont((i.country) xx* )  rseed(4132
+> 412)
+
+Cross-fit fold 1 of 10 ...
+Estimating lasso for inequality_unfair using plugin
+Estimating lasso for more_selfish using plugin
+
+Cross-fit fold 2 of 10 ...
+Estimating lasso for inequality_unfair using plugin
+Estimating lasso for more_selfish using plugin
+
+Cross-fit fold 3 of 10 ...
+Estimating lasso for inequality_unfair using plugin
+Estimating lasso for more_selfish using plugin
+
+Cross-fit fold 4 of 10 ...
+Estimating lasso for inequality_unfair using plugin
+Estimating lasso for more_selfish using plugin
+
+Cross-fit fold 5 of 10 ...
+Estimating lasso for inequality_unfair using plugin
+Estimating lasso for more_selfish using plugin
+
+Cross-fit fold 6 of 10 ...
+Estimating lasso for inequality_unfair using plugin
+Estimating lasso for more_selfish using plugin
+
+Cross-fit fold 7 of 10 ...
+Estimating lasso for inequality_unfair using plugin
+Estimating lasso for more_selfish using plugin
+
+Cross-fit fold 8 of 10 ...
+Estimating lasso for inequality_unfair using plugin
+Estimating lasso for more_selfish using plugin
+
+Cross-fit fold 9 of 10 ...
+Estimating lasso for inequality_unfair using plugin
+Estimating lasso for more_selfish using plugin
+
+Cross-fit fold 10 of 10 ...
+Estimating lasso for inequality_unfair using plugin
+Estimating lasso for more_selfish using plugin
+
+Cross-fit partialing-out             Number of obs                =     23,103
+linear model                         Number of controls           =        113
+                                     Number of selected controls  =         67
+                                     Number of folds in cross-fit =         10
+                                     Number of resamples          =          1
+                                     Wald chi2(1)                 =    1443.81
+                                     Prob > chi2                  =     0.0000
+
+------------------------------------------------------------------------------
+             |               Robust
+inequality~r | Coefficient  std. err.      z    P>|z|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+more_selfish |   .2326185   .0061219    38.00   0.000     .2206197    .2446172
+------------------------------------------------------------------------------
+Note: Chi-squared test is a Wald test of the coefficients of the variables
+      of interest jointly equal to zero. Lassos select controls for model
+      estimation. Type lassoinfo to see number of selected variables in each
+      lasso.
+
+. xporegress gov_should_reduce_inequality more_selfish, cont((i.country) xx* ) 
+>  rseed (912438)
+
+Cross-fit fold 1 of 10 ...
+Estimating lasso for gov_should_reduce_inequality using plugin
+Estimating lasso for more_selfish using plugin
+
+Cross-fit fold 2 of 10 ...
+Estimating lasso for gov_should_reduce_inequality using plugin
+Estimating lasso for more_selfish using plugin
+
+Cross-fit fold 3 of 10 ...
+Estimating lasso for gov_should_reduce_inequality using plugin
+Estimating lasso for more_selfish using plugin
+
+Cross-fit fold 4 of 10 ...
+Estimating lasso for gov_should_reduce_inequality using plugin
+Estimating lasso for more_selfish using plugin
+
+Cross-fit fold 5 of 10 ...
+Estimating lasso for gov_should_reduce_inequality using plugin
+Estimating lasso for more_selfish using plugin
+
+Cross-fit fold 6 of 10 ...
+Estimating lasso for gov_should_reduce_inequality using plugin
+Estimating lasso for more_selfish using plugin
+
+Cross-fit fold 7 of 10 ...
+Estimating lasso for gov_should_reduce_inequality using plugin
+Estimating lasso for more_selfish using plugin
+
+Cross-fit fold 8 of 10 ...
+Estimating lasso for gov_should_reduce_inequality using plugin
+Estimating lasso for more_selfish using plugin
+
+Cross-fit fold 9 of 10 ...
+Estimating lasso for gov_should_reduce_inequality using plugin
+Estimating lasso for more_selfish using plugin
+
+Cross-fit fold 10 of 10 ...
+Estimating lasso for gov_should_reduce_inequality using plugin
+Estimating lasso for more_selfish using plugin
+
+Cross-fit partialing-out             Number of obs                =     23,103
+linear model                         Number of controls           =        113
+                                     Number of selected controls  =         66
+                                     Number of folds in cross-fit =         10
+                                     Number of resamples          =          1
+                                     Wald chi2(1)                 =     704.30
+                                     Prob > chi2                  =     0.0000
+
+------------------------------------------------------------------------------
+             |               Robust
+gov_should~y | Coefficient  std. err.      z    P>|z|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+more_selfish |   .1490846   .0056177    26.54   0.000     .1380742     .160095
+------------------------------------------------------------------------------
+Note: Chi-squared test is a Wald test of the coefficients of the variables
+      of interest jointly equal to zero. Lassos select controls for model
+      estimation. Type lassoinfo to see number of selected variables in each
+      lasso.
+
+. log close
+      name:  <unnamed>
+       log:  /g4pool/eos/Documents/gits/BSRI/lasso_within.log
+  log type:  text
+ closed on:  15 Sep 2021, 11:15:10
+-------------------------------------------------------------------------------

@@ -1,0 +1,171 @@
+-------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  /g4pool/eos/Documents/gits/BSRI/lasso_between.log
+  log type:  text
+ opened on:  15 Sep 2021, 11:16:33
+
+. import delimited using SR_df_attitude_c.csv, delim(",") case(lower)
+(encoding automatically selected: ISO-8859-1)
+(8 vars, 60 obs)
+
+. 
+. 
+. local xlist = "zln_gni zinequality zmeanage zschooling zcorruption"
+
+. 
+. local i=0
+
+. foreach x1 in `xlist' {
+  2.         local j=0
+  3.         gen xx_`i' = `x1'
+  4.         foreach x2 in `xlist' {
+  5.                 if `j'>=`i' {
+  6.                         gen xx_`i'_`j' = `x1'*`x2'
+  7.                 }
+  8.                 local j=`j'+1
+  9.         }
+ 10.         local i=`i'+1
+ 11. }
+(1 missing value generated)
+(2 missing values generated)
+(1 missing value generated)
+(1 missing value generated)
+(1 missing value generated)
+(3 missing values generated)
+(1 missing value generated)
+(2 missing values generated)
+(2 missing values generated)
+(2 missing values generated)
+(2 missing values generated)
+
+. 
+. xporegress inequality_unfair mean_bs, cont( xx* ) rseed(4132412)
+
+Cross-fit fold 1 of 10 ...
+Estimating lasso for inequality_unfair using plugin
+Estimating lasso for mean_bs using plugin
+
+Cross-fit fold 2 of 10 ...
+Estimating lasso for inequality_unfair using plugin
+Estimating lasso for mean_bs using plugin
+
+Cross-fit fold 3 of 10 ...
+Estimating lasso for inequality_unfair using plugin
+Estimating lasso for mean_bs using plugin
+
+Cross-fit fold 4 of 10 ...
+Estimating lasso for inequality_unfair using plugin
+Estimating lasso for mean_bs using plugin
+
+Cross-fit fold 5 of 10 ...
+Estimating lasso for inequality_unfair using plugin
+Estimating lasso for mean_bs using plugin
+
+Cross-fit fold 6 of 10 ...
+Estimating lasso for inequality_unfair using plugin
+Estimating lasso for mean_bs using plugin
+
+Cross-fit fold 7 of 10 ...
+Estimating lasso for inequality_unfair using plugin
+Estimating lasso for mean_bs using plugin
+
+Cross-fit fold 8 of 10 ...
+Estimating lasso for inequality_unfair using plugin
+Estimating lasso for mean_bs using plugin
+
+Cross-fit fold 9 of 10 ...
+Estimating lasso for inequality_unfair using plugin
+Estimating lasso for mean_bs using plugin
+
+Cross-fit fold 10 of 10 ...
+Estimating lasso for inequality_unfair using plugin
+Estimating lasso for mean_bs using plugin
+
+Cross-fit partialing-out             Number of obs                =         57
+linear model                         Number of controls           =         20
+                                     Number of selected controls  =          5
+                                     Number of folds in cross-fit =         10
+                                     Number of resamples          =          1
+                                     Wald chi2(1)                 =      53.41
+                                     Prob > chi2                  =     0.0000
+
+------------------------------------------------------------------------------
+             |               Robust
+inequality~r | Coefficient  std. err.      z    P>|z|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+     mean_bs |   .8135111   .1113169     7.31   0.000     .5953339    1.031688
+------------------------------------------------------------------------------
+Note: Chi-squared test is a Wald test of the coefficients of the variables
+      of interest jointly equal to zero. Lassos select controls for model
+      estimation. Type lassoinfo to see number of selected variables in each
+      lasso.
+
+. xporegress gov_should_reduce_inequality mean_bs, cont( xx* ) rseed (912438)
+
+Cross-fit fold 1 of 10 ...
+Estimating lasso for gov_should_reduce_inequality using plugin
+Estimating lasso for mean_bs using plugin
+
+Cross-fit fold 2 of 10 ...
+Estimating lasso for gov_should_reduce_inequality using plugin
+Estimating lasso for mean_bs using plugin
+
+Cross-fit fold 3 of 10 ...
+Estimating lasso for gov_should_reduce_inequality using plugin
+Estimating lasso for mean_bs using plugin
+
+Cross-fit fold 4 of 10 ...
+Estimating lasso for gov_should_reduce_inequality using plugin
+Estimating lasso for mean_bs using plugin
+
+Cross-fit fold 5 of 10 ...
+Estimating lasso for gov_should_reduce_inequality using plugin
+Estimating lasso for mean_bs using plugin
+
+Cross-fit fold 6 of 10 ...
+Estimating lasso for gov_should_reduce_inequality using plugin
+Estimating lasso for mean_bs using plugin
+
+Cross-fit fold 7 of 10 ...
+Estimating lasso for gov_should_reduce_inequality using plugin
+Estimating lasso for mean_bs using plugin
+
+Cross-fit fold 8 of 10 ...
+Estimating lasso for gov_should_reduce_inequality using plugin
+Estimating lasso for mean_bs using plugin
+
+Cross-fit fold 9 of 10 ...
+Estimating lasso for gov_should_reduce_inequality using plugin
+Estimating lasso for mean_bs using plugin
+
+Cross-fit fold 10 of 10 ...
+Estimating lasso for gov_should_reduce_inequality using plugin
+Estimating lasso for mean_bs using plugin
+
+Cross-fit partialing-out             Number of obs                =         57
+linear model                         Number of controls           =         20
+                                     Number of selected controls  =          5
+                                     Number of folds in cross-fit =         10
+                                     Number of resamples          =          1
+                                     Wald chi2(1)                 =      39.24
+                                     Prob > chi2                  =     0.0000
+
+------------------------------------------------------------------------------
+             |               Robust
+gov_should~y | Coefficient  std. err.      z    P>|z|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+     mean_bs |   .6063669   .0967946     6.26   0.000      .416653    .7960808
+------------------------------------------------------------------------------
+Note: Chi-squared test is a Wald test of the coefficients of the variables
+      of interest jointly equal to zero. Lassos select controls for model
+      estimation. Type lassoinfo to see number of selected variables in each
+      lasso.
+
+. 
+. 
+. log close
+      name:  <unnamed>
+       log:  /g4pool/eos/Documents/gits/BSRI/lasso_between.log
+  log type:  text
+ closed on:  15 Sep 2021, 11:16:36
+-------------------------------------------------------------------------------
