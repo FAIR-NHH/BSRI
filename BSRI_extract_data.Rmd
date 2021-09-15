@@ -2,7 +2,7 @@
 title: "Extracting World Poll data for replication file we can share"
 author: "Erik Ø. Sørensen"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
-output: html_document
+output: github_document
 editor_options: 
   markdown: 
     wrap: 72
@@ -68,7 +68,7 @@ From communication with Zacc Ritter (Gallup), March 9, 2021:
 # Extracting public subset
 
 ```{r}
-WP_selfishness_public <- readRDS(here::here("data","WP_analytical.rds")) %>%
+WP_selfishness_public <- readRDS(here::here("data","WP_selfishness_confidential.rds")) %>%
   filter(in_experiment==TRUE) %>%
   dplyr::select(iso_a3, # Recoding of WP5 
                 wgt, # Population weights
@@ -77,9 +77,9 @@ WP_selfishness_public <- readRDS(here::here("data","WP_analytical.rds")) %>%
                 gov_should_reduce_inequality, #From Fairness Across the World module
                 inequality_unfair, # From Fairness Across the World module
                 WP1219, WP1220, WP3117, income_2, WP14) # Core Gallup World Poll variables
-saveRDS(WP_selfishness_public, file=here::here("pnas_BSRI/data/WP_selfishness_public.rds"))
-write_dta(WP_selfishness_public, here::here("pnas_BSRI/data/WP_selfishness_public.dta"))
-write_csv(WP_selfishness_public, file=here::here("pnas_BSRI/data/WP_selfishness_public.csv"))
+saveRDS(WP_selfishness_public, file=here::here("data", "WP_selfishness_public.rds"))
+write_dta(WP_selfishness_public, here::here("data", "WP_selfishness_public.dta"))
+write_csv(WP_selfishness_public, file=here::here("data", "WP_selfishness_public.csv"))
 ```
 
 # Session Info

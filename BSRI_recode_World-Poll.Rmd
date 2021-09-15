@@ -2,7 +2,7 @@
 title: "Recoding Gallup World Poll data for 'Belief in Selfish Rich Inequality'"
 author: "Erik Ø. Sørensen"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
-output: html_document
+output: github_document
 ---
 
 ```{r setup, include=FALSE}
@@ -268,7 +268,7 @@ WPs <- WPs %>% group_by(country) %>%
 
 # Saving results
 ```{r saving_analytical_data}
-saveRDS(WPs, file=here::here("pnas_BSRI", "data","WP_selfishness_confidential.rds"))
+saveRDS(WPs, file=here::here("data","WP_selfishness_confidential.rds"))
 ```
 
 # Session Info
