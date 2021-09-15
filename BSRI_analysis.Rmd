@@ -1,10 +1,10 @@
 ---
-title: "Analysis for global evidence on the selfish rich inequality hypothesis"
+title: "Analysis for global evidence on the selfish rich inequality hypothesis by Ingvild Almås, Alexander W. Cappelen, Erik Ø. Sørensen and Bertil Tungodden"
 author: "Erik Ø. Sørensen"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 always_allow_html: true
 output:
-  html_document:
+  github_document:
     toc: true
     toc_depth: 2
 ---
@@ -30,7 +30,7 @@ data(World)
 
 Loading World Poll data: 
 ```{r}
-WPs <- readRDS(here::here("pnas_BSRI","data","WP_selfishness_confidential.rds"))
+WPs <- readRDS(here::here("data","WP_selfishness_confidential.rds"))
 ```
 
 
@@ -138,7 +138,7 @@ and add errorbars with the survey-corrected standard error of means.
 ```{r}
 averages_with_se <- estimates %>%
   fatwo_rcfigure(selfish_mean, selfish_se, country,
-                 hline=3, path = here::here("pnas_BSRI","graphs","SR_averages_with_se.pdf"))
+                 hline=3, path = here::here("graphs","SR_averages_with_se.pdf"))
 averages_with_se
 ```
 
@@ -167,7 +167,7 @@ CCC
 "
 overview_display <- gl_hist + E8 + averages_with_se + plot_annotation(tag_levels = 'a') + plot_layout(design=overview_layout)
 overview_display
-ggsave(here::here("pnas_BSRI","graphs","Figure-1.pdf"), width=16, height=12, units="cm")
+ggsave(here::here("graphs","Figure-1.pdf"), width=16, height=12, units="cm")
 ```
 
 ## Histograms for each country (Figure in Supporting Information)
@@ -190,7 +190,7 @@ histograms1 <- country_bars %>% filter(country %in% countries1) %>%
   labs(y="Proportion", x="Belief in Selfish Rich Inequality") +
   facet_wrap(.~country)
 histograms1
-ggsave(here::here("pnas_BSRI","graphs","selfishness_histograms1.pdf"), width=24, height = 16, units="cm")
+ggsave(here::here("graphs","selfishness_histograms1.pdf"), width=24, height = 16, units="cm")
 histograms2 <- country_bars %>% filter(country %in% countries2) %>%
   ggplot(aes(x=v, y=proportion)) + 
   geom_bar(stat='identity') + 
@@ -198,7 +198,7 @@ histograms2 <- country_bars %>% filter(country %in% countries2) %>%
   labs(y="Proportion", x="Belief in Selfish Rich Inequality") +
   facet_wrap(.~country)
 histograms2
-ggsave(here::here("pnas_BSRI","graphs","selfishness_histograms2.pdf"), width=24, height = 16, units="cm")
+ggsave(here::here("graphs","selfishness_histograms2.pdf"), width=24, height = 16, units="cm")
 ```
 
 
@@ -250,7 +250,7 @@ country_bars %>% filter(v==3)
 
 Country-level external data that I read in: 
 ```{r}
-df_selfishness_c <- haven::read_dta(here::here("pnas_BSRI", "data", "BSRI_external_data.dta")) %>%
+df_selfishness_c <- haven::read_dta(here::here("data", "BSRI_external_data.dta")) %>%
   mutate(zCorruption = as.vector(scale(corruption)),
          zLn_GNI = as.vector(scale(log(GNI))),
          zInequality = as.vector(scale(WYD)),
@@ -464,7 +464,7 @@ histupper <- histogram_agree_conditional + labs(x=element_blank(), y = "Fraction
 histlower <- histogram_disagree_conditional + labs(x=element_blank(), y = "Fraction", title="Share disagreeing with crime important for inequality")
 
 histupper / histlower  + plot_annotation(tag_levels = 'a', caption="Both panels: Among those who believe in Selfish Rich Inequality")
-ggsave(here::here("pnas_BSRI","graphs","belief_classifications_histogram.pdf"), width = 16, height = 16, units = "cm")
+ggsave(here::here("graphs","belief_classifications_histogram.pdf"), width = 16, height = 16, units = "cm")
 ```
 
 
@@ -483,7 +483,7 @@ crime_disagree_amongBSR_graph <- belief_classification %>%
                  title = "Share disagreeing with crime important for inequality",
                  ytitle = "Share \u00B1 s.e.", ylim=c(0,1))
 crime_agree_amongBSR_graph / crime_disagree_amongBSR_graph + plot_annotation(tag_levels = "a")
-ggsave(here::here("pnas_BSRI","graphs","belief_classifications_ranked.pdf"), width=16, height = 16, units = "cm")
+ggsave(here::here("graphs","belief_classifications_ranked.pdf"), width=16, height = 16, units = "cm")
 ```
 
 
@@ -542,7 +542,7 @@ linearHypothesis(reg_crime_mobility, "more_criminal = 0")
 ```{r}
 country_param_plot + selfish_crime + histogram_agree_conditional + crime_mobility + 
   plot_annotation(tag_levels = 'a')
-ggsave(here::here("pnas_BSRI","graphs", "Figure-2.pdf"),
+ggsave(here::here("graphs", "Figure-2.pdf"),
        width = 16, height = 10, units = "cm")
 ```
 
@@ -589,7 +589,7 @@ msummary(list("(1)"=wdi1,"(2)"=wdi2,"(3)"=wdi3,"(4)"=wdi4,"(5)"=wdi5,"(6)"=wdi6,
          stars = c("*"=0.1, "**"=0.05, "***"=0.01),
          output="latex") %>% 
     add_header_above(c(" "=1, "Belief in Selfish Rich Inequality"=8)) %>%
-  cat(file=here::here("pnas_BSRI","tables","WDI_variables.tex"))
+  cat(file=here::here("tables","WDI_variables.tex"))
 ```
 
 
@@ -633,7 +633,7 @@ msummary(list("(1)"=hdi_1, "(2)"=hdi_2,
          stars = c("*"=0.1, "**"=0.05, "***"=.01), output="latex") %>%
   add_header_above(c(" ", "Including HDI"=2, "Including GPI"=2, "Business corruption"=1, "Government corruption"=1)) %>%
   add_header_above(c(" "=1, "Belief in Selfish Rich Inequality"=6)) %>%
-  cat(file=here::here("pnas_BSRI","tables","variant_explanatory_variables.tex"))
+  cat(file=here::here("tables","variant_explanatory_variables.tex"))
 ```
 
 
@@ -684,7 +684,7 @@ msummary(list("(1)"=lcorruption,"(2)"=lshadow_ec, "(3)"=lorg_crime, "(4)"=lall, 
          gof_omit = "R2 Adj.|se_type|AIC|BIC|Log.Lik.|F",
          output = "latex", stars = c('*'=0.1, '**'=0.05, '***'=0.01)) %>%
   add_header_above(c(" "=1, "Belief in Selfish Rich Inequality "=5)) %>%
-  cat(file=here::here("pnas_BSRI","tables","crime_measures.tex"))
+  cat(file=here::here("tables","crime_measures.tex"))
 
 
 ```
@@ -868,7 +868,7 @@ msummary(bgmodels, title="Associations within countries",
          coef_map=bg_names,
          gof_omit = "R2 Adj.|se_type", output="latex") %>%
   add_header_above(c(" "=1, "Belief in Selfish Rich Inequality"=10)) %>%
-  cat(file=here::here("pnas_BSRI","tables","selfishness_within_bg.tex"))
+  cat(file=here::here("tables","selfishness_within_bg.tex"))
 ```
 
 Testing with rank in income distribution
@@ -963,7 +963,7 @@ within_display <- polarization_selfish_rich + within_plot +
   plot_annotation(tag_levels = 'a') + 
   plot_layout(design=within_layout)
 within_display
-ggsave(here::here("pnas_BSRI", "graphs","Figure-3.pdf"), width=16, height=16, units="cm")
+ggsave(here::here("graphs","Figure-3.pdf"), width=16, height=16, units="cm")
 ```
 
 ## Polarization for each country (Figure in Supporting Information)
@@ -972,7 +972,7 @@ Figure with polarization means for each country:
 pol_means <- polarization_estimates %>% 
   fatwo_rcfigure(more_selfish_polarization, more_selfish_se, country,
                  ytitle="Polarization \u00B1 s.e.", 
-                 path = here::here("pnas_BSRI", "graphs","SR_polarization.pdf"))
+                 path = here::here("graphs","SR_polarization.pdf"))
 pol_means
 ```
 
@@ -1019,7 +1019,7 @@ country_params %>% dplyr::select(iso_a3, term, estimate, std.error) %>%
   filter(term == "inc_rank_oecd1") %>%
   mutate(country = countrycode(iso_a3, "iso3c", "country.name")) %>%
   fatwo_rcfigure(estimate, std.error, country, ytitle="Coefficient on income rank \u00B1 s.e.",
-                 hline=0, path=here::here("pnas_BSRI","graphs","selfishness_incrank_coef_joint.pdf"))
+                 hline=0, path=here::here("graphs","selfishness_incrank_coef_joint.pdf"))
 ```
 
 
@@ -1064,7 +1064,7 @@ msummary(list("(1)"=catt1, "(2)"=catt2, "(4)"=catt4, "(5)"=catt5),
          title = "Attitudes vs beliefs---between information",
          output = "latex") %>%
   add_header_above(c(" " = 1, "Inequality is unfair" = 2, "Should reduce inequality" = 2)) %>%
-  cat(file= here::here("pnas_BSRI","tables","attitudes_vs_beliefs_countries.tex"))
+  cat(file= here::here("tables","attitudes_vs_beliefs_countries.tex"))
 ```
 ### Outputting data for lasso regressions
 
@@ -1080,7 +1080,7 @@ df_attitude_c %>% dplyr::select(mean_Bs,
                                 zMeanAge,
                                 zSchooling,
                                 zCorruption) %>%
-  write_csv(file=here::here("pnas_BSRI","SR_df_attitude_c.csv"), na="." )
+  write_csv(file=here::here("SR_df_attitude_c.csv"), na="." )
 ```
 
 The lasso analysis is run with the `lasso_between.do` file.
@@ -1131,7 +1131,7 @@ msummary(att_all, coef_map = att_names, gof_omit = "R2 Adj.|se_type",
          output = 'latex',
          title="Attitudes vs beliefs---within information") %>%
   add_header_above(c(" " = 1, "Inequality is unfair" = 2, "Should reduce inequality" = 2))  %>%
-  cat(file= here::here("pnas_BSRI","tables","attitudes_vs_beliefs_individuals.tex"))
+  cat(file= here::here("tables","attitudes_vs_beliefs_individuals.tex"))
 ```
 These are within-country regressions that take proper account for 
 population weights and for clustering in the standard errors.
@@ -1147,7 +1147,7 @@ WPsr2 %>%
   dplyr::select(inequality_unfair, gov_should_reduce_inequality, more_selfish, 	
   inc_rank_oecd1, binary_education_high, d_female, z_age, d_married, 
   z_n_children, d_immigrant, d_working, d_urban, iso_a3, psuid) %>%
-  haven::write_dta(here::here("pnas_BSRI", "WPsr2.dta"))
+  haven::write_dta(here::here("WPsr2.dta"))
 ```
 
 The lasso analysis is run with the `lasso_within.do` file.
@@ -1236,7 +1236,7 @@ msummary(list(religion_r1, religion_r2, religion_r3, religion_r4, religion_r5, r
          coef_map=bg_namesr, gof_omit = "R2 Adj.|se_type",
          output = 'latex') %>%
   add_header_above(c(" " = 1, "Belief in Selfish Rich" = 2, "Inequality is unfair"=2, "Government should aim..."=2))  %>%
-  cat(file= here::here("pnas_BSRI","tables","religion_subsample.tex")) 
+  cat(file= here::here("tables","religion_subsample.tex")) 
 ```
 
 We see that on the subsample of observations for which we have the variable 
@@ -1306,7 +1306,7 @@ car::linearHypothesis(charity_reg, "more_selfish = 0")
 
 
 ```{r}
-ggsave(here::here("pnas_BSRI","graphs","SR_charity_of_rich.pdf"), width = 16, height = 10, units="cm")
+ggsave(here::here("graphs","SR_charity_of_rich.pdf"), width = 16, height = 10, units="cm")
 ```
 
 # Relation to Durante et al (2017). 
@@ -1332,7 +1332,7 @@ For the second problem, if there are close substitutes to rich and poor
 Reading in my own classifications, these are the numbers I find: 
 
 ```{r}
-scm_df <- read_csv(here::here("pnas_BSRI", "data", "Durante2017.csv"))
+scm_df <- read_csv(here::here("data", "Durante2017.csv"))
 ```
 Out of the countries that can be classified, I find that the
 rich are believed to be "colder" in most of the samples:
