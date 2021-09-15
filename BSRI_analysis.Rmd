@@ -1,0 +1,1355 @@
+---
+title: "Analysis for global evidence on the selfish rich inequality hypothesis"
+author: "Erik Ø. Sørensen"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+always_allow_html: true
+output:
+  html_document:
+    toc: true
+    toc_depth: 2
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library("tidyverse")
+library("broom")
+library("tmap")
+library("countrycode")
+library("survey")
+library("patchwork")
+library("estimatr")
+library("modelsummary")
+library("kableExtra")
+library("car")
+library(showtext)
+showtext_auto()
+source("functions.R")
+data(World)
+```
+
+
+Loading World Poll data: 
+```{r}
+WPs <- readRDS(here::here("pnas_BSRI","data","WP_selfishness_confidential.rds"))
+```
+
+
+# Summaries of SR support and missing variables
+Average and standard deviation of support in the selfish rich:
+```{r}
+WPs %>% summarize( mean_SR = weighted.mean(more_selfish, wgtw, na.rm=TRUE),
+                   sd_SR = weighted.sd(more_selfish, wgtw, na.rm=TRUE))
+```
+How many did not know or refused to answer? 
+
+
+```{r}
+WPsmissing <- WPs %>% filter(!is.na(WP20081)) %>%
+  mutate(missing_sr = as.numeric(is.na(more_selfish)),
+         missing_unfair = as.numeric(is.na(inequality_unfair)),
+         missing_govaim = as.numeric(is.na(gov_should_reduce_inequality)),
+         anyrefused_sr = (WP20081==99 | WP20082 == 99 | WP20083==99),
+         anyrefused_unfair = (WP20096==99 | WP20097==99 | WP20098==99),
+         anyrefused_govaim = (WP20099==99 | WP20100==99 | WP20101==99),
+         any_missing = pmax(missing_sr, missing_unfair, missing_govaim),
+         anyrefused = (anyrefused_sr | anyrefused_unfair | anyrefused_govaim))
+table(WPsmissing$WP20081) # Belief in selfish rich
+table(WPsmissing$WP20096) # Inequality is unfair
+table(WPsmissing$WP20099) # Government should reduce inequality
+
+table(WPsmissing$any_missing)
+
+```
+
+
+Estimating the shares:
+```{r}
+isos <- unique(WPsmissing$iso_a3)
+missing_estimates <- tibble(iso_a3 = isos,
+                    missing_sr = rep.int(-99.9, length(isos)),
+                    missing_sr_se = rep.int(-99.9, length(isos)),
+                    missing_unfair = rep.int(-99.9, length(isos)),
+                    missing_unfair_se = rep.int(-99.9, length(isos)),
+                    missing_govaim = rep.int(-99.9, length(isos)),
+                    missing_govaim_se = rep.int(-99.9, length(isos)))
+for (i in seq_along(isos)) {
+  cnt <- WPsmissing %>% filter(iso_a3 == isos[i])
+  svy_instance <- svydesign(~psuid, weights=~wgt, data=cnt)
+  x1 <- svymean(~missing_sr, svy_instance, na.rm=TRUE)
+  x2 <- svymean(~missing_unfair, svy_instance, na.rm=TRUE)
+  x3 <- svymean(~missing_govaim, svy_instance, na.rm=TRUE)
+  missing_estimates[i, "missing_sr"] = mean(x1)
+  missing_estimates[i, "missing_sr_se"] = SE(x1)
+  missing_estimates[i, "missing_unfair"] = mean(x2)
+  missing_estimates[i, "missing_unfair_se"] = SE(x2)
+  missing_estimates[i, "missing_govaim"] = mean(x3)
+  missing_estimates[i, "missing_govaim_se"] = SE(x3)
+}
+missing_estimates <- missing_estimates %>% 
+  mutate(country = countrycode(iso_a3, "iso3c", "country.name"))
+```
+
+```{r}
+table(WPsmissing$missing_govaim, WPsmissing$missing_unfair)
+```
+
+
+# Belief in "Selfish Rich Inequality" around the world
+
+## A histogram (subfigure)
+
+Making a histogram:
+```{r}
+gl_bars <- WPs %>% summarize(weighted.bars(more_selfish, wgtw))
+gl_bars 
+gl_bars %>% filter(v>3) %>% summarize(sum_agree = sum(proportion))
+gl_bars %>% filter(v<3) %>% summarize(sum_disagree = sum(proportion))
+gl_hist <- gl_bars %>% ggplot(aes(x=v, y=proportion)) + 
+  geom_bar(stat='identity') +
+  theme_minimal() +
+  labs(y="Proportion", x="Belief in Selfish Rich Inequality")
+gl_hist
+```
+
+
+
+## Average beliefs (subfigure)
+First to creating the summaries that are to be graphed. I want to take into account
+the survey structure as far as I can. I take into
+account the sampling weights and the primary sampling unit clustering. 
+
+```{r}
+isos <- unique(WPs$iso_a3)
+estimates <- tibble(iso_a3 = isos,
+                    selfish_mean = rep.int(-99.9, length(isos)),
+                    selfish_se = rep.int(-99.9, length(isos)))
+for (i in seq_along(isos)) {
+  cnt <- WPs %>% filter(iso_a3 == isos[i])
+  svy_instance <- svydesign(~psuid, weights=~wgt, data=cnt)
+  x <- svymean(~more_selfish, svy_instance, na.rm=TRUE)
+  estimates[i, "selfish_mean"] = mean(x)
+  estimates[i, "selfish_se"] = SE(x)
+}
+estimates <- estimates %>% mutate(country = countrycode(iso_a3, "iso3c", "country.name"))
+```
+
+Now, trying to plot these on scale by level. I add the "neutral" position (3) as a straight line for reference,
+and add errorbars with the survey-corrected standard error of means.
+```{r}
+averages_with_se <- estimates %>%
+  fatwo_rcfigure(selfish_mean, selfish_se, country,
+                 hline=3, path = here::here("pnas_BSRI","graphs","SR_averages_with_se.pdf"))
+averages_with_se
+```
+
+
+
+## A global map (subfigure)
+```{r}
+bmap_joined <- left_join(World, estimates, by = "iso_a3")
+
+E8 <- ggplot(data=bmap_joined) + 
+  geom_sf(aes(fill=selfish_mean), size=0.05) + 
+  theme_minimal() + 
+  scale_fill_viridis_c(option = "inferno") +
+  labs(fill="Belief in\nSelfish Rich\nInequality")
+
+dist_breaks15 <- c(1,2,3,4,5)
+E8
+```
+
+## Putting panels together (Figure in paper)
+```{r}
+overview_layout <- "
+ABB
+ABB
+CCC
+"
+overview_display <- gl_hist + E8 + averages_with_se + plot_annotation(tag_levels = 'a') + plot_layout(design=overview_layout)
+overview_display
+ggsave(here::here("pnas_BSRI","graphs","Figure-1.pdf"), width=16, height=12, units="cm")
+```
+
+## Histograms for each country (Figure in Supporting Information)
+
+
+For the appendix, we want two 30-country graphs for reference.
+Made for sideways display, and to cover the whole page. I plot the countries 
+in alphabetical order.
+```{r}
+country_bars <- WPs %>% group_by(iso_a3) %>% 
+  summarize(weighted.bars(more_selfish, wgt)) %>%
+  mutate(country = countrycode(iso_a3, "iso3c", "country.name"))
+countries <- sort( unique(country_bars$country))
+countries1 <- countries[1:30]
+countries2 <- countries[31:60]
+histograms1 <- country_bars %>% filter(country %in% countries1) %>%
+  ggplot(aes(x=v, y=proportion)) + 
+  geom_bar(stat='identity') + 
+  theme_minimal() +
+  labs(y="Proportion", x="Belief in Selfish Rich Inequality") +
+  facet_wrap(.~country)
+histograms1
+ggsave(here::here("pnas_BSRI","graphs","selfishness_histograms1.pdf"), width=24, height = 16, units="cm")
+histograms2 <- country_bars %>% filter(country %in% countries2) %>%
+  ggplot(aes(x=v, y=proportion)) + 
+  geom_bar(stat='identity') + 
+  theme_minimal() +
+  labs(y="Proportion", x="Belief in Selfish Rich Inequality") +
+  facet_wrap(.~country)
+histograms2
+ggsave(here::here("pnas_BSRI","graphs","selfishness_histograms2.pdf"), width=24, height = 16, units="cm")
+```
+
+
+How many countries have "agree strongly or disagree strongly" as mode?
+First, weighted estimates of the proportions at each level of belief:
+```{r}
+country_bars %>%
+  group_by(iso_a3) %>%
+  filter(rank(proportion, ties.method="first")==5) %>%
+  with(table(v))
+```
+
+In which which countries is there strongest belief in selfish rich inequality? 
+```{r}
+country_bars %>% filter(v==5) %>%
+  arrange(-proportion) %>% head()
+```
+And where is there a strong majority disagreeing? I add up the strong and weak disagreement.
+
+```{r}
+country_bars %>%
+  mutate(more_selfish3 = case_when(
+    v <3 ~ "disagree",
+    v ==3 ~ "neutral",
+    v >3 ~ "agree"
+  )) %>% group_by(iso_a3, more_selfish3) %>%
+  summarize( proportion = sum(proportion)) %>%
+  filter(more_selfish3=="disagree") %>%
+  arrange(-proportion) %>% 
+  head()
+```
+
+And where is the mode neutral?
+
+```{r}
+country_bars %>%
+  group_by(iso_a3) %>%
+  filter(rank(proportion, ties.method="first")==5) %>%
+  filter(v==3) %>% mutate(country = countrycode(iso_a3, "iso3c", "country.name")) 
+```
+
+
+# Between-country variation in beliefs
+
+```{r}
+country_bars %>% filter(v==3)
+```
+
+
+Country-level external data that I read in: 
+```{r}
+df_selfishness_c <- haven::read_dta(here::here("pnas_BSRI", "data", "BSRI_external_data.dta")) %>%
+  mutate(zCorruption = as.vector(scale(corruption)),
+         zLn_GNI = as.vector(scale(log(GNI))),
+         zInequality = as.vector(scale(WYD)),
+         zSchooling = as.vector(scale(Schooling)),
+         zHDI = as.vector(scale(HDI)),
+         zshadow_ec = as.vector(scale(shadow_ec)),
+         zorg_crime =  - as.vector(scale(org_crime)), # Flipping sign such that higher number is worse
+         zgovernment =  as.vector(scale(government_ineff)),
+         zstability =  as.vector(scale(instability)),
+         zregulation =  as.vector(scale(poor_reg)),
+         zlaw =  as.vector(scale(law)),
+         zvoice = as.vector(scale(voice_acc)),
+         zgpi = - as.vector(scale(gpi_gpi)),
+         country = countrycode(iso_a3, "iso3c","country.name"))
+```
+
+
+I want to extend this data with World Poll variables.
+```{r}
+df_selfishness_c <- WPs %>% group_by(iso_a3) %>%
+  summarize( mean_Bs = weighted.mean(more_selfish, wgt, na.rm=TRUE),
+             mean_crime = weighted.mean(more_criminal, wgt, na.rm=TRUE),
+             dget_ahead = weighted.mean(get_ahead, wgt, na.rm=TRUE),
+             MeanAge = weighted.mean(age, wgt, na.rm=TRUE),
+             dcorruption_business = weighted.mean(corruption_business, wgt, na.rm=TRUE),
+             dcorruption_government = weighted.mean(corruption_government, wgt, na.rm=TRUE)
+             ) %>%
+  ungroup() %>%
+  mutate( zget_ahead = as.vector(scale(dget_ahead)),
+          zMeanAge = as.vector(scale(MeanAge)),
+          zcorruption_business = as.vector(scale(dcorruption_business)),
+          zcorruption_government = as.vector(scale(dcorruption_government))
+         ) %>%
+  left_join(df_selfishness_c)
+```
+What are the correlations between the different crime/corruption variables?
+
+```{r}
+df_selfishness_c %>% dplyr::select(zCorruption, zshadow_ec, zorg_crime) %>%
+  cor(use="pairwise.complete.obs") %>% kable(digits=3)
+```
+
+
+
+## Regression coefficients (subfigure)
+Having read the data, I create a data frame of regression coefficients.
+```{r}
+l1 <- df_selfishness_c %>% lm(mean_Bs ~ zCorruption, data=.)
+l2 <- df_selfishness_c %>% lm(mean_Bs ~ zLn_GNI, data=.)
+l3 <- df_selfishness_c %>% lm(mean_Bs ~ zInequality, data=.)
+l4 <- df_selfishness_c %>% lm(mean_Bs ~ zMeanAge, data=.)
+l5 <- df_selfishness_c %>% lm(mean_Bs ~ zSchooling, data=.)
+l6 <- df_selfishness_c %>% lm(mean_Bs ~ zCorruption + zLn_GNI  + zSchooling +
+                               zInequality + zMeanAge + zSchooling, data=.)
+
+modelsc <- list(l1=l1,l2=l2,l3=l3,l4=l4,l5=l5,l6=l6)
+modelsc_df <- purrr::map_df(modelsc, broom::tidy, .id = "model")
+```
+
+Having the data, now to plot them:
+```{r}
+params_to_plot <- modelsc_df %>% filter(term != "(Intercept)") %>%
+  mutate(new_name = case_when(
+    term == "zCorruption" ~ "Corruption",
+    term == "zcorruption_government" ~ "Corruption G",
+    term == "zcorruption_business" ~ "Corruption B",
+    term == "zcorruption_WP" ~ "Corruption (WP)",
+    term == "zLn_GNI" ~ "GNI",
+    term == "zInequality" ~ "Inequality",
+    term == "zget_ahead" ~ "Mobility",
+    term == "zMeanAge" ~ "Age",
+    term == "zSchooling" ~ "Education" )) %>%
+  mutate(model_spec = factor( ifelse(model=="l6", "joint", "separate"),
+                              levels = c("separate", "joint")),
+         termf = factor(new_name, levels=c("Corruption", "Corruption G", "Corruption B", "Corruption (WP)", "GNI","Inequality","Mobility",
+                                       "Age", "Education")))
+country_param_plot <- params_to_plot %>% 
+  ggplot(aes(y=estimate, 
+             x=termf, 
+             fill=model_spec, 
+             group=model_spec,
+             ymin = estimate - std.error,
+             ymax = estimate + std.error)) +
+  geom_bar(stat='identity', width=0.5, orientation = "x",
+           position = position_dodge2(width = 0.5)) +
+  geom_errorbar(width=0.2, position = position_dodge(width = 0.5 )) +
+  theme_minimal() +
+  labs(x = element_blank(),
+       y = "Estimate \u00B1 s.e.",
+       fill = "Model\nspecification") +
+  scale_x_discrete(guide = guide_axis(n.dodge = 2))
+country_param_plot
+```
+
+Statistical test provided in paper: 
+```{r}
+car::linearHypothesis(l1, c("zCorruption = 0"))
+```
+And now for the joint specification:
+```{r}
+car::linearHypothesis(l6, "zCorruption = 0")
+```
+
+
+
+
+The regressions, for reference:
+```{r}
+aggregate_names <- c("zCorruption"="Corruption", 
+                     "zLn_GNI"="GNI", 
+                     "zInequality"="Inequality", 
+                     "zget_ahead"="Mobility", 
+                     "zMeanAge"="Age", 
+                     "zSchooling"="Education" )
+msummary(list(l1,l2,l3,l4,l5,l6),
+         title="Country level associations", coef_map=aggregate_names,
+         gof_omit = "R2 Adj.|Num|se_type", stars = TRUE) %>%
+  add_header_above(c(" "=1, "Separate"=5, "Joint"=1))
+```
+
+```{r}
+summary(l6)
+```
+
+
+## Belief in Selfish Rich Inequality vs belief in the role of crime (subfigure)
+
+
+```{r}
+df_crime_selfish_c <- WPs %>% 
+  group_by(iso_a3) %>%
+  summarize(more_selfish = weighted.mean(more_selfish, wgt, na.rm = TRUE),
+            more_criminal = weighted.mean(more_criminal, wgt, na.rm = TRUE))
+selfish_crime <- df_crime_selfish_c %>%
+  ggplot(aes(y=more_selfish, x=more_criminal)) +
+  geom_point() +
+  geom_smooth(method = 'lm', color='black') +
+  theme_minimal() +
+  labs(x = "Belief in the role of crime",
+       y = "Belief in SRI")
+selfish_crime
+```
+
+The belief/crime regression for reference and the reported test:
+
+```{r}
+reg_selfish_crime <- lm(more_selfish ~ more_criminal, data=df_crime_selfish_c ) 
+reg_selfish_crime %>% summary
+car::linearHypothesis(reg_selfish_crime, "more_criminal")
+```
+
+And what were the responses to Crime? First the total number asked, then the number of missing:
+```{r}
+(asked_crime <- sum(table(WPs$WP20093)))
+(missing_crime <- asked_crime - sum(table(WPs$more_criminal)))
+```
+
+
+## Classifying beliefs by type (subfigure)
+
+```{r}
+belief_classification <- WPs %>% mutate( agree_crime_amongBSR = ifelse(more_selfish %in% c(4,5) & 
+                                                                         !is.na(more_criminal), 
+                                              more_criminal %in% c(4,5),
+                                              NA),
+                                         disagree_crime_amongBSR = ifelse(more_selfish %in% c(4,5) & 
+                                                                         !is.na(more_criminal), 
+                                              more_criminal %in% c(1,2),
+                                              NA),
+                                         agree_crime_and_BSR = ifelse(!is.na(more_selfish) &
+                                                                        !is.na(more_criminal),
+                                                                       (more_selfish %in% c(4,5)) & 
+                                                                        (more_criminal %in% c(4,5)),
+                                                                      NA),
+                                         disagree_crime_and_BSR = ifelse(!is.na(more_selfish) &
+                                                                        !is.na(more_criminal),
+                                                                       (more_selfish %in% c(4,5)) & 
+                                                                        (more_criminal %in% c(1,2)),
+                                                                      NA),
+                                         agree_BSR = ifelse(!is.na(more_selfish), more_selfish %in% c(4,5), NA),
+                                         agree_crime = ifelse(!is.na(more_criminal) , more_criminal %in% c(4,5), NA)) %>%
+  srvyr::as_survey_design(psuid, weights=wgtw) %>%
+  group_by(iso_a3) %>%
+  summarize( agree_crime_amongBSR = srvyr::survey_mean(agree_crime_amongBSR,na.rm=TRUE),
+             disagree_crime_amongBSR = srvyr::survey_mean(disagree_crime_amongBSR, na.rm=TRUE),
+             agree_crime_and_BSR = srvyr::survey_mean(agree_crime_and_BSR, na.rm=TRUE),
+             disagree_crime_and_BSR = srvyr::survey_mean(disagree_crime_and_BSR, na.rm=TRUE),
+             agree_BSR = srvyr::survey_mean(agree_BSR, na.rm=TRUE),
+             agree_crime = srvyr::survey_mean(agree_crime, na.rm=TRUE)
+             ) %>% 
+  mutate(country=countrycode(iso_a3, "iso3c","country.name"))
+belief_classification %>% skimr::skim()
+
+histogram_agree_conditional <- belief_classification %>%
+  ggplot(aes(x = agree_crime_amongBSR, y= (..count..)/tapply(..count..,..PANEL..,sum)[..PANEL..])) +
+  geom_histogram(binwidth=0.1, boundary=0) +
+  theme_minimal() +
+  labs(x = "Share agreeing to SRI and Crime",
+       y = "Fraction")
+histogram_disagree_conditional <- belief_classification %>%
+  ggplot(aes(x = disagree_crime_amongBSR,  y= (..count..)/tapply(..count..,..PANEL..,sum)[..PANEL..])) +
+  geom_histogram(binwidth=0.1, boundary=0) +
+  theme_minimal() +
+  labs(x = "Share disagreeing with Crime as cause\n(among those who believe in Selfish Rich Inequality)",
+       y = "Fraction")  +
+  xlim(c(0,1))
+
+histogram_agree_conditional
+histogram_disagree_conditional
+histupper <- histogram_agree_conditional + labs(x=element_blank(), y = "Fraction", title="Share agreeing with crime important for inequality")
+histlower <- histogram_disagree_conditional + labs(x=element_blank(), y = "Fraction", title="Share disagreeing with crime important for inequality")
+
+histupper / histlower  + plot_annotation(tag_levels = 'a', caption="Both panels: Among those who believe in Selfish Rich Inequality")
+ggsave(here::here("pnas_BSRI","graphs","belief_classifications_histogram.pdf"), width = 16, height = 16, units = "cm")
+```
+
+
+Graphs with the shares agreeing and disagreeing with the role of crime among those who do believe 
+selfish rich inequality.
+
+```{r}
+crime_agree_amongBSR_graph <- belief_classification %>% 
+  filter(!(iso_a3 %in% c("CHN","JOR"))) %>%
+  fatwo_rcfigure(agree_crime_amongBSR, se = agree_crime_amongBSR_se, group = country, 
+                 title = "Share agreeing with crime important for inequality",
+                 ytitle = "Share \u00B1 s.e.", ylim=c(0,1))
+crime_disagree_amongBSR_graph <- belief_classification %>% 
+  filter(!(iso_a3 %in% c("CHN","JOR"))) %>%
+  fatwo_rcfigure(disagree_crime_amongBSR, se = disagree_crime_amongBSR_se, group = country, 
+                 title = "Share disagreeing with crime important for inequality",
+                 ytitle = "Share \u00B1 s.e.", ylim=c(0,1))
+crime_agree_amongBSR_graph / crime_disagree_amongBSR_graph + plot_annotation(tag_levels = "a")
+ggsave(here::here("pnas_BSRI","graphs","belief_classifications_ranked.pdf"), width=16, height = 16, units = "cm")
+```
+
+
+
+In how many countries is there a majority for belief in crime **among** those who believe in SRI?
+
+```{r}
+table(belief_classification$agree_crime_amongBSR > 0.5)
+```
+
+In how many countries is there a majority  disagreeing with belief in crime **among** those who believe in SRI?
+
+```{r}
+table(belief_classification$disagree_crime_amongBSR > 0.5)
+```
+In how many countries is there a at least 20% disagreeing with belief in crime **among** those who believe in SRI?
+
+```{r}
+table(belief_classification$disagree_crime_amongBSR > 0.2)
+```
+
+
+
+## Belief in crime and mobility (subfigure)
+
+
+```{r}
+df_crime_mobility_c <- WPs %>% 
+  group_by(iso_a3) %>%
+  summarize(get_ahead  = weighted.mean(get_ahead, wgt, na.rm = TRUE),
+            more_criminal = weighted.mean(more_criminal, wgt, na.rm = TRUE))
+crime_mobility <- df_crime_mobility_c %>%
+  ggplot(aes(y=get_ahead, x=more_criminal)) +
+  geom_point() +
+  geom_smooth(method = 'lm', color='black') +
+  theme_minimal() +
+  labs(x = "Belief in the role of crime",
+       y = "Belief in mobility")
+crime_mobility
+```
+
+And what does the regression line look like? 
+```{r}
+reg_crime_mobility <- df_crime_mobility_c %>% lm(get_ahead ~ more_criminal, data=.)
+reg_crime_mobility %>% summary
+linearHypothesis(reg_crime_mobility, "more_criminal = 0")
+```
+
+
+
+
+
+
+
+## Putting the graphs together (Figure in paper)
+```{r}
+country_param_plot + selfish_crime + histogram_agree_conditional + crime_mobility + 
+  plot_annotation(tag_levels = 'a')
+ggsave(here::here("pnas_BSRI","graphs", "Figure-2.pdf"),
+       width = 16, height = 10, units = "cm")
+```
+
+## Robustness of cross country analysis wrt WDI governance indicators (Table in Supporting Information)
+We want to look at the effect of varying which WDI governance indicator we include.
+
+In addition to running on each of the different WDI indices, we also want to look at a 
+governance index, created as the first principal component of the other indices. 
+```{r}
+wdi_pca <- df_selfishness_c %>% # na.exclude() %>% 
+  princomp( ~ zCorruption + zgovernment + zstability +  zregulation + zlaw + zvoice, data=.)
+df_selfishness_c$zgovernance_index = as.vector(scale(predict(wdi_pca, newdata=df_selfishness_c)[,1]))
+
+```
+
+
+
+```{r}
+wdi1 <- df_selfishness_c %>% lm(mean_Bs ~ zCorruption , data=.)
+wdi2 <- df_selfishness_c %>% lm(mean_Bs ~ zgovernment , data=.)
+wdi3 <- df_selfishness_c %>% lm(mean_Bs ~ zstability , data=.)
+wdi4 <- df_selfishness_c %>% lm(mean_Bs ~ zregulation , data=.)
+wdi5 <- df_selfishness_c %>% lm(mean_Bs ~ zlaw , data=.)
+wdi6 <- df_selfishness_c %>% lm(mean_Bs ~ zvoice , data=.)
+wdi7 <- df_selfishness_c %>% lm(mean_Bs ~ zCorruption + zgovernment + zstability + zregulation + zlaw + zvoice, data=.)
+wdi8 <- df_selfishness_c %>% lm(mean_Bs ~ zgovernance_index, data=.)
+
+wdi_names <- c("zCorruption"="Corruption", 
+              "zgovernment"="Government",
+              "zstability"="Stability",
+              "zregulation"="Regulation",
+              "zlaw" = "Law",
+              "zvoice"="Voice and accountability",
+              "zgovernance_index"="Governance index",
+              "(Intercept)"="Constant")
+msummary(list("(1)"=wdi1,"(2)"=wdi2,"(3)"=wdi3,"(4)"=wdi4,"(5)"=wdi5,"(6)"=wdi6, "(7)"=wdi7,"(8)"=wdi8),
+         coef_map = wdi_names,
+         gof_omit ="R2.Adj|AIC|BIC|Log.Lik.|F",
+         stars = c("*"=0.1, "**"=0.05, "***"=0.01)) %>% 
+    add_header_above(c(" "=1, "Belief in Selfish Rich Inequality"=8)) 
+msummary(list("(1)"=wdi1,"(2)"=wdi2,"(3)"=wdi3,"(4)"=wdi4,"(5)"=wdi5,"(6)"=wdi6, "(7)"=wdi7,"(8)"=wdi8),
+         coef_map = wdi_names,
+         gof_omit ="R2.Adj|AIC|BIC|Log.Lik.|F",
+         stars = c("*"=0.1, "**"=0.05, "***"=0.01),
+         output="latex") %>% 
+    add_header_above(c(" "=1, "Belief in Selfish Rich Inequality"=8)) %>%
+  cat(file=here::here("pnas_BSRI","tables","WDI_variables.tex"))
+```
+
+
+
+
+
+
+## Robustness of cross country analysis (Table in Supporting Information)
+
+
+
+First replacing welfare measures with HDI, then Peace, then exchanging the corruption measures:
+```{r}
+hdi_1 <- df_selfishness_c %>% lm(mean_Bs ~ zHDI, data=.)
+hdi_2 <- df_selfishness_c %>% lm(mean_Bs ~ zHDI + zCorruption , data=.)
+gpi_1 <- df_selfishness_c %>% lm(mean_Bs ~ zgpi, data=.)
+gpi_2 <- df_selfishness_c %>% lm(mean_Bs ~ zgpi + zCorruption , data=.)
+cv_1 <- df_selfishness_c %>% lm(mean_Bs ~ zcorruption_business, data=.)
+cv_2 <- df_selfishness_c %>% lm(mean_Bs ~ zcorruption_government, data=.)
+
+hdi_names <- c( "zCorruption"="Corruption",
+                "zcorruption_business"="Corruption",
+                "zcorruption_government"="Corruption",
+                "zHDI"="Human Development Index",
+                "zgpi"="Global Peace Index",
+                "(Intercept)"="Constant")
+msummary(list("(1)"=hdi_1, "(2)"=hdi_2, 
+              "(3)"=gpi_1, "(4)"=gpi_2, 
+              "(5)"=cv_1, "(6)"=cv_2), 
+         coef_map = hdi_names,
+         gof_omit = "R2 Adj.|se_type|AIC|BIC|Log.Lik.|F", 
+         stars = TRUE) %>%
+  add_header_above(c(" ", "Including HDI"=2, "Including GPI"=2, "Business corruption"=1, "Government corruption"=1)) %>%
+  add_header_above(c(" "=1, "Belief in Selfish Rich Inequality"=6))
+
+msummary(list("(1)"=hdi_1, "(2)"=hdi_2, 
+              "(3)"=gpi_1, "(4)"=gpi_2, 
+              "(5)"=cv_1, "(6)"=cv_2),  
+         coef_map = hdi_names,
+         gof_omit = "R2 Adj.|se_type|AIC|BIC|Log.Lik.|F", 
+         stars = c("*"=0.1, "**"=0.05, "***"=.01), output="latex") %>%
+  add_header_above(c(" ", "Including HDI"=2, "Including GPI"=2, "Business corruption"=1, "Government corruption"=1)) %>%
+  add_header_above(c(" "=1, "Belief in Selfish Rich Inequality"=6)) %>%
+  cat(file=here::here("pnas_BSRI","tables","variant_explanatory_variables.tex"))
+```
+
+
+
+
+## Exploring corruption and measures of crime (Table in Supporting Information)
+
+Then I try the various ways to replace corruption with various crime indicators. I also
+create an index of these variant indicators.
+PCA analysis to create an index:
+```{r}
+crime_pca <- df_selfishness_c %>% 
+  dplyr::select(zCorruption, zshadow_ec,  zorg_crime) %>%
+  na.exclude() %>% 
+  princomp( ~ zCorruption + zshadow_ec +  zorg_crime, data=.)
+df_selfishness_c$zgaincrime = as.vector(scale(predict(crime_pca, newdata=df_selfishness_c)[,1]))
+```
+
+
+```{r}
+lcorruption <- df_selfishness_c %>% lm(mean_Bs ~ zCorruption , data=.)
+lshadow_ec <- df_selfishness_c %>% lm(mean_Bs ~ zshadow_ec , data=.)
+lorg_crime <- df_selfishness_c %>% lm(mean_Bs ~ zorg_crime , data=.)
+lgaincrime <- df_selfishness_c %>% lm(mean_Bs ~ zgaincrime , data=.)
+lall <- df_selfishness_c %>% lm(mean_Bs ~ zCorruption + 
+                                  zshadow_ec + zorg_crime , data=.)
+```
+
+
+
+
+Output a table
+```{r}
+aggregate_namesL <- c("zCorruption"="Corruption", 
+                      "zshadow_ec"="Shadow economy",
+                      "zorg_crime"="Organized crime",
+                      "zgaincrime"="Crime for gain index",
+                      "zInequality"="Inequality", 
+                      "zLn_GNI"="GNI",
+                     "zMeanAge"="Mean age", "zSchooling"="Schooling",
+                     "(Intercept)"="Constant")
+msummary(list("(1)"=lcorruption,"(2)"=lshadow_ec, "(3)"=lorg_crime, "(4)"=lall, "(5)"=lgaincrime),
+         title="Country level associations", coef_map=aggregate_namesL,
+         gof_omit = "R2 Adj.|se_type|AIC|BIC|Log.Lik.|F", stars = c('*'=0.1, '**'=0.05, '***'=0.01)) %>%
+  add_header_above(c(" "=1, "Belief in Selfish Rich Inequality "=5))
+msummary(list("(1)"=lcorruption,"(2)"=lshadow_ec, "(3)"=lorg_crime, "(4)"=lall, "(5)"=lgaincrime),
+         title="Country level associations", coef_map=aggregate_namesL,
+         gof_omit = "R2 Adj.|se_type|AIC|BIC|Log.Lik.|F",
+         output = "latex", stars = c('*'=0.1, '**'=0.05, '***'=0.01)) %>%
+  add_header_above(c(" "=1, "Belief in Selfish Rich Inequality "=5)) %>%
+  cat(file=here::here("pnas_BSRI","tables","crime_measures.tex"))
+
+
+```
+```{r}
+summary(lall)
+```
+
+Tests reported in paper:
+```{r}
+car::linearHypothesis(lshadow_ec, c("zshadow_ec = 0"))
+car::linearHypothesis(lorg_crime, c("zorg_crime = 0"))
+car::linearHypothesis(lall, c("zCorruption = 0"))
+```
+
+
+
+## Exploring mobility vs corruption (Table in Supporting Information)
+```{r}
+smobility <- df_selfishness_c %>% lm(zCorruption ~ zget_ahead, data=.)
+smobilitya <- df_selfishness_c %>% lm(zCorruption ~ zget_ahead + zLn_GNI   +
+                               zInequality + zMeanAge + zSchooling, data=.)
+
+scorruption <- df_selfishness_c %>% lm(zget_ahead ~  zCorruption, data=.)
+scorruptiona <- df_selfishness_c %>% lm(zget_ahead ~  zCorruption + zLn_GNI  + zSchooling +
+                               zInequality + zMeanAge , data=.)
+aggregate_namesR <- c("zget_ahead"="Mobility", 
+                     "zCorruption"="Corruption", 
+                     "zLn_GNI"="GNI", 
+                     "zInequality"="Inequality",  
+                     "zMeanAge"="Mean age", 
+                     "zSchooling"="Schooling" )
+msummary(list(smobility, smobilitya, scorruption, scorruptiona),
+         title="Country level associations", coef_map=aggregate_namesR,
+         gof_omit = "R2 Adj.|se_type|AIC|BIC|Log.Lik.|F", stars = TRUE) %>%
+  add_header_above(c(" "=1, "Corruption "=2, "Mobility"=2))
+```
+
+
+
+
+
+
+# Within-country variation in beliefs
+
+
+## Polarization (subfigure)
+There is a large literature on polarization (Esteban 
+and Raj, ECMA, 1994), we are using the Standard Deviation to indicate
+polarization. 
+
+We want a 0-1 measure, so I'm going to scale the standard deviation
+in the maximum attainable standard deviation. Max standard deviation is when half the
+sample reports 1 and the other half 5, in which case we can use the formula
+$$ \sigma = \sqrt{ E[X^2] - E[X]^2 }
+$$ to calculate the max standard deviation:
+$$ \max \sigma = \sqrt{ 0.5\cdot 1^2 + 0.5\cdot 5^2 - 3^2  } = \sqrt{13 - 9} = 2.
+$$
+
+### Calculating standard deviations
+We want weighted standard deviations and might also want standard errors  of these. I
+use Lumley's `Survey` package, which keeps track of PSUs and the post stratification weights.
+
+We need a bit of delta-rule to get the standard errors, since Lumley's package
+only provides the variance and standard error of variance. We are interested in the 
+standard deviation, which is just the square root of the estimated variance. But we
+need to also correct the standard error to fit the standard deviations. 
+
+The Delta rule says that in general, we can approximate
+$$ 
+\mathrm{var}(f(s)) = |f'(s)|^2 \cdot \mathrm{var}(s).
+$$
+To find the variance of the estimated variance, we square the estimated standard error of the variance.
+With $f(s)=\sqrt{s}$, and $f'(s) = 1/2\sqrt{s}$, we can now use the estimated variance
+and the estimated standard error of this variance to calculate our polarization measure and its standard
+error. I make a function to calculate this:
+```{r}
+polsd <- function(svyvarinstance, maxSD) {
+  m <- svyvarinstance[1]           # Estimated variance 
+  s2 <- SE(svyvarinstance)^2       # Estimated variance of variance (...).
+  p <- sqrt(m)/maxSD               # Polarization: SD / max (SD)
+  # Delta rule, sqrt for standard error and scaling:
+  se <- sqrt( (1/(2*sqrt(m)))^2 * s2)/maxSD    
+  r <- c(p, se)
+  names(r) <- c("polarization", "se")      # Return a named vector.
+  r
+}
+```
+### Calculating polarization
+```{r}
+isos <- unique(WPs$iso_a3) 
+polarization_estimates <- tibble(iso_a3 = isos,
+                    more_selfish_polarization = rep.int(-99.9, length(isos)),
+                    more_selfish_se = rep.int(-99.9, length(isos)))
+                    
+for (i in seq_along(isos)) {
+  cnt <- WPs %>% filter(iso_a3 == isos[i])
+  svy_instance <- svydesign(~psuid, weights=~wgt, data=cnt)
+
+  b5 <- svyvar(~more_selfish, svy_instance, na.rm=TRUE)
+  pol_ms <- polsd(b5, 2)
+  polarization_estimates[i, "more_selfish_polarization"] = pol_ms[["polarization"]]
+  polarization_estimates[i, "more_selfish_se"] = pol_ms[["se"]]  
+
+}
+polarization_estimates <- polarization_estimates %>% 
+  mutate(country = countrycode(iso_a3, "iso3c", "country.name")) 
+polarization_map_joined <- left_join(World, polarization_estimates, by = "iso_a3")
+```
+
+
+
+
+## Figure with regression table results (subfigure)
+We want bars to illustrate the estimated coefficients
+
+First, make sense of the number of missing observations:
+```{r}
+WPs_missing <- WPs %>% mutate(
+  m_SR = is.na(more_selfish),
+  m_inc = is.na(inc_rank_oecd1),
+  m_d_male = is.na(d_male),
+  m_age = is.na(z_age),
+  m_married = is.na(d_married),
+  m_children = is.na(z_n_children),
+  m_edu1 = is.na(d_midedu),
+  m_edu2 = is.na(d_highedu),
+  m_immigrant = is.na(d_immigrant),
+  m_working = is.na(d_working),
+  m_urban = is.na(d_urban),
+  m_inequnf = is.na(inequality_unfair),
+  m_reduce = is.na(gov_should_reduce_inequality),
+) %>% dplyr::select(iso_a3, starts_with("m_")) %>%
+  group_by(iso_a3) %>%
+  summarise_all(sum)
+```
+
+Run the regressions on the complete data:
+```{r}
+WPsr <- WPs %>% mutate(fiso_a3 = factor(iso_a3),
+                       complete = complete.cases(more_selfish,
+                                                 inc_rank_oecd1,
+                                                 d_male,
+                                                 z_age,
+                                                 d_married,
+                                                 z_n_children,
+                                                 d_midedu,
+                                                 d_highedu,
+                                                 d_immigrant,
+                                                 d_working,
+                                                 d_urban)) %>%
+  mutate(d_education = pmax(d_highedu, d_midedu)) %>%
+  filter(complete==TRUE)
+lp1 <- lm_robust(more_selfish ~ inc_rank_oecd1 , data=WPsr, weights=wgtw, clusters=psuid, fixed_effects = ~fiso_a3, se_type="stata")
+lp2 <- lm_robust(more_selfish ~ binary_education_high,  data = WPsr, weights=wgtw, clusters=psuid, fixed_effects = ~fiso_a3, se_type="stata")
+lp3 <- lm_robust(more_selfish ~ d_male, data=WPsr, weights=wgtw, clusters=psuid, fixed_effects = ~fiso_a3, se_type="stata")
+lp4 <- lm_robust(more_selfish ~ z_age , data=WPsr, weights=wgtw, clusters=psuid, fixed_effects = ~fiso_a3, se_type="stata")
+lp5 <- lm_robust(more_selfish ~ d_married , data=WPsr, weights=wgtw, clusters=psuid, fixed_effects = ~fiso_a3, se_type="stata") 
+lp6 <- lm_robust(more_selfish ~ z_n_children , data=WPsr, weights=wgtw, clusters=psuid, fixed_effects = ~fiso_a3, se_type="stata") 
+lp7 <- lm_robust(more_selfish ~ d_immigrant , data=WPsr, weights=wgtw, clusters=psuid, fixed_effects = ~fiso_a3, se_type="stata")
+lp8 <- lm_robust(more_selfish ~ d_working , data=WPsr, weights=wgtw, clusters=psuid, fixed_effects = ~fiso_a3, se_type="stata") 
+lp9 <- lm_robust(more_selfish ~ d_urban , data=WPsr, weights=wgtw, clusters=psuid, fixed_effects = ~fiso_a3, se_type="stata")
+ref_regression <- lm_robust(more_selfish ~ inc_rank_oecd1 + d_male +
+       z_age + d_married + z_n_children + binary_education_high + d_immigrant + d_working + 
+       d_urban , data = WPsr, weights=wgtw, clusters=psuid, fixed_effects = ~fiso_a3, se_type="stata")
+bgmodels <- list("(1)"=lp1,"(2)"=lp2,"(3)"=lp3,"(4)"=lp4,"(5)"=lp5,"(6)"=lp6,"(7)"=lp7,"(8)"=lp8,"(9)"=lp9,"(10)"=ref_regression)
+
+bg_names <- c('inc_rank_oecd1' = "Income rank (within country, 0--1)",
+              'binary_education_highTRUE' = "High education (relative, d)",
+              'd_maleTRUE' = "Male (d)",
+              'z_age' = "Age (Z-score)",
+              'd_marriedTRUE' = "Married (d)",
+              'z_n_children' = "# children (Z-score)",
+              'd_immigrantTRUE' = "Immigrant (d)",
+              'd_workingTRUE' = "Employed (d)",
+              'd_urbanTRUE' = "Urban (d)")
+msummary(bgmodels, title="Associations within countries", 
+         coef_map=bg_names,
+         gof_omit = "R2 Adj.|se_type") %>%
+    add_header_above(c(" "=1, "Belief in Selfish Rich Inequality"=10))
+msummary(bgmodels, title="Associations within countries", 
+         coef_map=bg_names,
+         gof_omit = "R2 Adj.|se_type", output="latex") %>%
+  add_header_above(c(" "=1, "Belief in Selfish Rich Inequality"=10)) %>%
+  cat(file=here::here("pnas_BSRI","tables","selfishness_within_bg.tex"))
+```
+
+Testing with rank in income distribution
+```{r}
+car::linearHypothesis(lp1,"inc_rank_oecd1 = 0")
+car::linearHypothesis(ref_regression, "inc_rank_oecd1 = 0")
+```
+
+Testing with education level:
+```{r}
+car::linearHypothesis(lp2,"binary_education_highTRUE = 0")
+```
+
+
+Testing with male:
+```{r}
+car::linearHypothesis(lp3,"d_maleTRUE = 0")
+```
+
+Testing with age:
+```{r}
+car::linearHypothesis(lp4,"z_age = 0")
+```
+
+
+
+
+Collecting the models in a data frame
+```{r}
+bgmodels_df <- purrr::map_df(bgmodels, broom::tidy, .id = "model")
+```
+
+Now, I have a data frame of all the regression coefficients. 
+We don't want to print all of them (many) of them are country fixed
+effects and such). So, to filter out the ones that go into the graph:
+```{r}
+params_to_plot <- c("inc_rank_oecd1", "binary_education_highTRUE", 
+                    "d_maleTRUE", "z_age")
+params_df <- bgmodels_df %>% 
+  filter(term %in% params_to_plot) %>%
+  mutate(model_spec = factor( ifelse(model=="(10)","joint","separate"),
+                              levels = c("separate","joint")))
+```
+
+Now, make a plot of these:
+```{r}
+within_plot <- params_df %>% 
+  mutate( termf = factor(term, levels = c("inc_rank_oecd1", "binary_education_highTRUE",
+                                          "d_maleTRUE","z_age")),
+          termf2 = fct_recode(termf,
+                              "Income rank" = "inc_rank_oecd1",
+                              "High education" = "binary_education_highTRUE",
+                              "Male" = "d_maleTRUE",
+                              "Age" = "z_age")) %>%
+  ggplot(aes(x=termf2, 
+             y=estimate, 
+             ymin=estimate-std.error,
+             ymax=estimate+std.error, 
+             fill=model_spec, 
+             group=model_spec)) +
+  geom_bar(stat='identity', orientation = "x", 
+           width=0.5, position = position_dodge2(width=0.5)) +
+  geom_errorbar(width=0.2, position=position_dodge(width=0.5)) +
+  theme_minimal() +
+  labs(y = "Estimate \u00B1 s.e.",
+       x = element_blank(),
+       fill = "Model\nspecification") +
+  scale_x_discrete(guide = guide_axis(n.dodge = 2))
+within_plot
+```
+
+
+
+
+## Combining within regression plot with polarization map (Figure in paper)
+```{r}
+polarization_selfish_rich <- ggplot(data=polarization_map_joined) + 
+  geom_sf(aes(fill=more_selfish_polarization), size=0.05) + 
+  theme_minimal() + 
+  labs(fill="Polarization,\nBelief in\nSelfish Rich\nInequality") +
+  scale_fill_viridis_c(option = "inferno", begin = 0.1)
+polarization_selfish_rich
+```
+
+Putting the graphs together with "patchwork"
+```{r} 
+within_layout <- "
+A
+B
+"
+within_display <- polarization_selfish_rich + within_plot + 
+  plot_annotation(tag_levels = 'a') + 
+  plot_layout(design=within_layout)
+within_display
+ggsave(here::here("pnas_BSRI", "graphs","Figure-3.pdf"), width=16, height=16, units="cm")
+```
+
+## Polarization for each country (Figure in Supporting Information)
+Figure with polarization means for each country: 
+```{r}
+pol_means <- polarization_estimates %>% 
+  fatwo_rcfigure(more_selfish_polarization, more_selfish_se, country,
+                 ytitle="Polarization \u00B1 s.e.", 
+                 path = here::here("pnas_BSRI", "graphs","SR_polarization.pdf"))
+pol_means
+```
+
+## Regressions country-specific coefficients (Figure in Supporting Information)
+
+```{r}
+WPsrn <- WPsr %>% mutate(country=countrycode(iso_a3, "iso3c", "country.name")) %>%
+  group_by(country) %>%
+  nest()
+estimate_fn <- function(df) {
+  lm_robust(more_selfish  ~ inc_rank_oecd1 + d_male + 
+       z_age + d_married + z_n_children + d_midedu + d_highedu + d_immigrant + d_working + 
+       d_urban , data = df, weights=wgt, clusters=psuid, se_type="stata")
+}
+by_country <- WPsrn %>% 
+  mutate(model = map(data, estimate_fn)) %>%
+  arrange(country)
+
+bg_names <- c(bg_names, '(Intercept)' = "Constant")
+mdc <- by_country$model
+names(mdc) <- by_country$country
+```
+
+We can run the joint regression within each country. Venezuela hasn't got income data, so I remove before
+running the regressions.
+```{r warning=FALSE}
+
+rg <- function(df) {
+  lm1 <- lm_robust(more_selfish  ~ inc_rank_oecd1 + d_male + 
+       z_age + d_married + z_n_children + d_midedu + binary_education_high + 
+      d_working + d_urban, data = df, weights=wgt)
+}
+country_params <- WPsr  %>%
+  filter(iso_a3 !="VEN") %>%
+  nest(-iso_a3) %>%
+  mutate(fit = map(data, rg),
+      tidied = map(fit, tidy)) %>%
+  unnest(tidied)
+```
+
+Figure with income rank coefficients 
+```{r}
+country_params %>% dplyr::select(iso_a3, term, estimate, std.error) %>%
+  filter(term == "inc_rank_oecd1") %>%
+  mutate(country = countrycode(iso_a3, "iso3c", "country.name")) %>%
+  fatwo_rcfigure(estimate, std.error, country, ytitle="Coefficient on income rank \u00B1 s.e.",
+                 hline=0, path=here::here("pnas_BSRI","graphs","selfishness_incrank_coef_joint.pdf"))
+```
+
+
+
+# Attitudes vs beliefs
+
+
+## Between analysis (subtable)
+
+For the between analysis of attitude data, the mean attitude data need to be added to
+the aggregate dataset.
+
+```{r}
+df_attitude_c <- WPs %>% group_by(iso_a3) %>%
+  summarize(gov_should_reduce_inequality = weighted.mean(gov_should_reduce_inequality, wgt, na.rm=TRUE),
+            inequality_unfair = weighted.mean(inequality_unfair, wgt, na.rm=TRUE)) %>%
+  left_join(df_selfishness_c, by="iso_a3")
+```
+
+Now for the short and long regressions:
+```{r}
+catt1 <- df_attitude_c %>% lm(inequality_unfair ~ mean_Bs, data=.)
+catt2 <- df_attitude_c %>% lm(inequality_unfair ~ mean_Bs + zCorruption + zLn_GNI +zInequality + zMeanAge + zSchooling , data=.)
+catt4 <- df_attitude_c %>% lm(gov_should_reduce_inequality ~ mean_Bs, data=.)
+catt5 <- df_attitude_c %>% lm(gov_should_reduce_inequality ~ mean_Bs + zCorruption + zLn_GNI +zInequality + zMeanAge + zSchooling, data=.)
+
+catt_names <- c("mean_Bs"="Belief in Selfish Rich Inequality (1--5)",
+               "zCorruption"="Corruption",
+               "zLn_GNI"="GNI",
+               "zInequality"="Inequality",
+               "zMeanAge"="Age",
+               "zSchooling"="Education",
+               "(Intercept)"="Constant")
+msummary(list("(1)"=catt1, "(2)"=catt2, "(4)"=catt4, "(5)"=catt5),
+         coef_map = catt_names,
+         of_omit ="R2 Adj.|AIC|BIC|Log.Lik.",
+         title = "Attitudes vs beliefs---between information") %>%
+  add_header_above(c(" " = 1, "Inequality is unfair" = 2, "Should reduce inequality" = 2))
+msummary(list("(1)"=catt1, "(2)"=catt2, "(4)"=catt4, "(5)"=catt5),
+         coef_map = catt_names,
+         of_omit ="R2 Adj.|AIC|BIC|Log.Lik.",
+         title = "Attitudes vs beliefs---between information",
+         output = "latex") %>%
+  add_header_above(c(" " = 1, "Inequality is unfair" = 2, "Should reduce inequality" = 2)) %>%
+  cat(file= here::here("pnas_BSRI","tables","attitudes_vs_beliefs_countries.tex"))
+```
+### Outputting data for lasso regressions
+
+We run the lasso regressions using the `xporegress` command of Stata. 
+In order to do so, I write the relevant data to a file.
+
+```{r}
+df_attitude_c %>% dplyr::select(mean_Bs,
+                                inequality_unfair,
+                                gov_should_reduce_inequality,
+                                zLn_GNI,
+                                zInequality,
+                                zMeanAge,
+                                zSchooling,
+                                zCorruption) %>%
+  write_csv(file=here::here("pnas_BSRI","SR_df_attitude_c.csv"), na="." )
+```
+
+The lasso analysis is run with the `lasso_between.do` file.
+
+## Within analysis (subtable)
+
+A short and long specification---with the addition of a lasso-selected
+specification. Here the short and long column:
+
+```{r}
+WPsr2 <- WPs %>% mutate(fiso_a3 = factor(iso_a3),
+                       complete = complete.cases(inequality_unfair,
+                                                 gov_should_reduce_inequality, 
+                                                 more_selfish,
+                                                 inc_rank_oecd1,
+                                                 d_male,
+                                                 z_age,
+                                                 d_married,
+                                                 z_n_children,
+                                                 d_midedu,
+                                                 d_highedu,
+                                                 d_immigrant,
+                                                 d_working,
+                                                 d_urban)) %>%
+  mutate(country = countrycode(iso_a3, "iso3c", "country.name")) %>%
+  filter(complete==TRUE)
+att1 <- lm_robust(inequality_unfair ~ more_selfish, data=WPsr2, weights=wgtw, clusters=psuid, 
+                  se_type="stata", fixed_effects = ~country)
+att2 <- lm_robust(inequality_unfair ~ more_selfish + inc_rank_oecd1 + binary_education_high + 
+             d_male + z_age + d_married + z_n_children + 
+             d_immigrant + d_working + d_urban , data=WPsr2, weights=wgtw,
+           clusters=psuid, se_type="stata", fixed_effects = ~country)
+att4 <- lm_robust(gov_should_reduce_inequality ~ more_selfish, data=WPsr2, weights=wgtw,
+           clusters=psuid, se_type="stata", fixed_effects = ~country)
+att5 <- lm_robust(gov_should_reduce_inequality ~ more_selfish + inc_rank_oecd1 + binary_education_high + 
+             d_male + z_age + d_married + z_n_children + 
+             d_immigrant + d_working + d_urban, data=WPsr2, weights=wgtw,
+           clusters=psuid, se_type="stata", fixed_effects = ~country)
+
+att_all <- list(att1,att2,att4,att5)
+att_names <- c('more_selfish' = "Belief in the selfish rich hypothesis",  bg_names)
+
+msummary(att_all, coef_map = att_names, gof_omit = "R2 Adj.|se_type", 
+         title="Attitudes vs beliefs---within information") %>%
+  add_header_above(c(" " = 1, "Inequality is unfair" = 2, "Should reduce inequality" = 2))  
+
+msummary(att_all, coef_map = att_names, gof_omit = "R2 Adj.|se_type", 
+         output = 'latex',
+         title="Attitudes vs beliefs---within information") %>%
+  add_header_above(c(" " = 1, "Inequality is unfair" = 2, "Should reduce inequality" = 2))  %>%
+  cat(file= here::here("pnas_BSRI","tables","attitudes_vs_beliefs_individuals.tex"))
+```
+These are within-country regressions that take proper account for 
+population weights and for clustering in the standard errors.
+
+
+
+### Outputting data for lasso regressions
+We run the lasso regressions using the `xporegress` command of Stata. 
+In order to do so, I write the relevant data to a file.
+
+```{r}
+WPsr2 %>% 
+  dplyr::select(inequality_unfair, gov_should_reduce_inequality, more_selfish, 	
+  inc_rank_oecd1, binary_education_high, d_female, z_age, d_married, 
+  z_n_children, d_immigrant, d_working, d_urban, iso_a3, psuid) %>%
+  haven::write_dta(here::here("pnas_BSRI", "WPsr2.dta"))
+```
+
+The lasso analysis is run with the `lasso_within.do` file.
+
+
+
+# The role of religion (Table for Supporting Information)
+The question on the role of religion in daily life was not asked in a number of
+countries:
+```{r}
+WPs %>% mutate(religion_answer = !is.na(d_religionimp) ) %>%
+  group_by(country) %>% 
+  summarize(nreligion_answers = sum(as.numeric(religion_answer))) %>%
+  filter(nreligion_answers==0) %>%
+  dplyr::select(country, nreligion_answers)
+```
+
+To what extent is there an effect of removing religion on the answers
+we are interested in? I operationalize this as the effect on 
+the joint regressions in Figure 3 and Table 1. First I restrict the sample
+to those observations that have answers on the importance of religion
+on daily life, and then I run the regressions on this subsample---with and without
+the importance in daily life dummy variable.
+
+
+```{r}
+WPs_with_religion <- WPs %>% filter(!is.na(d_religionimp)) %>% 
+  mutate(fiso_a3 = factor(iso_a3))
+bg_namesr <- c('more_selfish' = "Belief in Selfish Rich (1--5)",
+               'd_religionimpTRUE' = "Religion important in daily life (d)",
+               'inc_rank_oecd1' = "Income rank (within country, 0--1)",
+               'd_mideduTRUE' = "Medium level of education (d)",
+               'binary_education_highTRUE' = "High education (relative, d)",
+               'd_higheduTRUE' = "High level of education (d)",
+               'd_maleTRUE' = "Male (d)",
+               'z_age' = "Age (Z-score)",
+               'd_marriedTRUE' = "Married (d)",
+               'z_n_children' = "# children (Z-score)",
+               'd_immigrantTRUE' = "Immigrant (d)",
+               'd_workingTRUE' = "Employed (d)",
+               'd_urbanTRUE' = "Urban (d)")
+```
+
+First the regressions relating Belief in Selfish Rich to background variables:
+```{r}
+religion_r1 <- lm_robust(more_selfish ~ inc_rank_oecd1 + d_male + 
+       z_age + d_married + z_n_children + binary_education_high + d_immigrant + d_working + 
+       d_urban , data = WPs_with_religion, weights=wgtw, clusters=psuid, fixed_effects = ~fiso_a3, 
+       se_type="stata")
+religion_r2 <- lm_robust(more_selfish ~ d_religionimp + inc_rank_oecd1 + d_male + 
+       z_age + d_married + z_n_children + binary_education_high + d_immigrant + d_working + 
+       d_urban , data = WPs_with_religion, weights=wgtw, clusters=psuid, fixed_effects = ~fiso_a3, 
+       se_type="stata")
+```
+
+The the regressions relating the attitude variables to belief in selfish rich:
+```{r}
+religion_r3 <- lm_robust(inequality_unfair ~ more_selfish + inc_rank_oecd1 + binary_education_high + 
+             d_male + z_age + d_married + z_n_children + 
+             d_immigrant + d_working + d_urban , data=WPs_with_religion, weights=wgtw,
+           clusters=psuid, se_type="stata", fixed_effects = ~country)
+religion_r4 <- lm_robust(inequality_unfair ~ more_selfish + d_religionimp + inc_rank_oecd1 + binary_education_high + 
+             d_male + z_age + d_married + z_n_children + 
+             d_immigrant + d_working + d_urban , data=WPs_with_religion, weights=wgtw,
+           clusters=psuid, se_type="stata", fixed_effects = ~country)
+religion_r5 <- lm_robust(gov_should_reduce_inequality ~ more_selfish + inc_rank_oecd1 + binary_education_high + 
+             d_male + z_age + d_married + z_n_children + 
+             d_immigrant + d_working + d_urban , data=WPs_with_religion, weights=wgtw,
+           clusters=psuid, se_type="stata", fixed_effects = ~country)
+religion_r6 <- lm_robust(gov_should_reduce_inequality ~ more_selfish + d_religionimp + inc_rank_oecd1 + binary_education_high + 
+             d_male + z_age + d_married + z_n_children + 
+             d_immigrant + d_working + d_urban , data=WPs_with_religion, weights=wgtw,
+           clusters=psuid, se_type="stata", fixed_effects = ~country)
+
+```
+
+
+
+```{r}
+msummary(list(religion_r1, religion_r2, religion_r3, religion_r4, religion_r5, religion_r6), 
+         title="On subsample with importance of religion variable", 
+         coef_map=bg_namesr, gof_omit = "R2 Adj.|se_type") %>%
+  add_header_above(c(" " = 1, "Belief in Selfish Rich" = 2, "Inequality is unfair"=2, "Government should aim..."=2))  
+msummary(list(religion_r1, religion_r2, religion_r3, religion_r4, religion_r5, religion_r6), 
+         title="On subsample with importance of religion variable", 
+         coef_map=bg_namesr, gof_omit = "R2 Adj.|se_type",
+         output = 'latex') %>%
+  add_header_above(c(" " = 1, "Belief in Selfish Rich" = 2, "Inequality is unfair"=2, "Government should aim..."=2))  %>%
+  cat(file= here::here("pnas_BSRI","tables","religion_subsample.tex")) 
+```
+
+We see that on the subsample of observations for which we have the variable 
+on the importance of religion in daily life, the inclusion of this
+variable has practically speaking no importance on the other estimated
+coefficients or standard errors.
+
+
+
+# Are the richer more selfish? (Figure for Supporting Information) 
+
+We have a direct measure of charitable giving in the Gallup World Poll,
+respondents are asked if they "donated money to a charity" last month, a yes/no question.
+
+```{r}
+helping_income_gradient_c1 <- WPs %>% 
+  filter(iso_a3!="VEN") %>%
+  group_by(iso_a3) %>%
+  mutate( z_donated_money = weighted.scale(donated_money, wgt, na.rm = TRUE),
+          z_incomerank = weighted.scale(inc_rank_oecd1, wgt, na.rm = TRUE)) %>%
+  nest() %>%
+  mutate( model = purrr::map(data,
+                             \(x) {
+                               lm_robust(z_donated_money ~ z_incomerank,
+                                         data=x,
+                                         weights = wgt, 
+                                         clusters = psuid
+                                         )
+                             }
+  )) %>% mutate(b = map(model, broom::tidy)) %>% 
+  unnest(b)  %>% 
+  dplyr::select(-c(data,model)) %>%
+  filter(term=="z_incomerank") %>% 
+  rename("donated_income_correlation"="estimate")
+```
+
+Second, merge this with country average of belief in selfish rich
+
+```{r}
+world_giving_c1 <- WPs %>% group_by(iso_a3) %>%
+  summarize(more_selfish = weighted.mean(more_selfish, wgt, na.rm=TRUE)) %>%
+  left_join(helping_income_gradient_c1) %>%
+  ggplot(aes(x = more_selfish, 
+             y = donated_income_correlation,
+             ymin = donated_income_correlation - std.error,
+             ymax = donated_income_correlation + std.error,
+             label = iso_a3)) +
+  geom_errorbar(color="gray") +
+  geom_point() +
+  geom_smooth(method="lm", color="black") + 
+  theme_minimal() +
+  geom_text(hjust = 0, nudge_x = 0.02) +
+  labs(x = "Average Belief in Selfish Rich Inequality",
+       y = "Correlation between 'donated money'\nand income rank \u00B1 s.e.")
+world_giving_c1
+```
+
+What does the regression line look like? 
+```{r}
+charity_reg <-  WPs %>% group_by(iso_a3) %>%
+  summarize(more_selfish = weighted.mean(more_selfish, wgt, na.rm=TRUE)) %>%
+  left_join(helping_income_gradient_c1) %>%
+  lm(donated_income_correlation ~ more_selfish, data = .)
+charity_reg %>% summary
+car::linearHypothesis(charity_reg, "more_selfish = 0")
+```
+
+
+```{r}
+ggsave(here::here("pnas_BSRI","graphs","SR_charity_of_rich.pdf"), width = 16, height = 10, units="cm")
+```
+
+# Relation to Durante et al (2017). 
+
+There isn't a direct comparison to Durante et al (2017), since they focus on "ambivalent stereotypes," measured by
+the correlation between "warmth" (which maybe relates to selfishness) and competence (which is outside the scope
+of our paper). They also don't report directly any number on "warmth." But they do show, for a number of groups, 
+scatter graphs in warmth/competence space. These are not quantified on the axes, and they are calculated
+in different ways in each country, but we might be able to extract some information. In addition to the three scatter
+plots in the paper (US, Pakistan, and Denmark), there are a number available on the [Fiske lab website](https://www.fiskelab.org/cross-cultural-wc-maps/),
+(referenced in the paper) and for Norway and Germany in the original papers. We can examine each of these scatter plots,
+and determine how the "rich" and the "poor" score on warmth (the second axis in these graphs).
+
+There are some issues with this approach:
+
+1. It doesn't seem that the Fiske lab website has a complete set of graphs.
+2. The groups used in each country are not the same, so not all graphs have a "rich" and a "poor" group.
+3. These are second order beliefs: They are reported subjective beliefs about what most people believe.
+
+The first problem I have ignored. 
+For the second problem, if there are close substitutes to rich and poor 
+(such as "upper class" vs "low" or "working" class), I have used this. 
+Reading in my own classifications, these are the numbers I find: 
+
+```{r}
+scm_df <- read_csv(here::here("pnas_BSRI", "data", "Durante2017.csv"))
+```
+Out of the countries that can be classified, I find that the
+rich are believed to be "colder" in most of the samples:
+```{r}
+table(scm_df$Rich_colder)
+table(scm_df$country[!is.na(scm_df$Rich_colder)])
+length(table(scm_df$country[!is.na(scm_df$Rich_colder)]))
+```
+
+In most of the samples reported on by Durante2017, the rich are believed to 
+be "colder" than the poor (in 30 out of 39 samples with beliefs about groups that can readily 
+be classified as referencing the rich and the poor---representing 32 countries).
+
+
+
+# Session Info
+```{r}
+sessionInfo()
+```
+

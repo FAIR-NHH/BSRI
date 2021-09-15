@@ -37,3 +37,13 @@ vignettes/*.pdf
 
 # R Environment Variables
 .Renviron
+
+# The full data from World Poll and the confidential recoded processed data
+# should not be put at github.
+data/WP2018.dta
+data/WP_selfishness_confidential.rds
+
+# Temporary files for running lasso in Stata
+WPsr2.dta
+SR_df_attitude_c.csv
+

@@ -1,0 +1,89 @@
+---
+title: "Extracting World Poll data for replication file we can share"
+author: "Erik Ø. Sørensen"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output: html_document
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library("tidyverse")
+library("haven")
+```
+
+# Data availability policy
+
+There are no restrictions on the data used that were collected as part
+of the Fairness-Across-the-World module; these outcomes will be publicly
+released with a core set of individual background variables. The
+remaining set of background variables will be made available upon
+request (in order to secure the privacy of individual respondents).
+
+## Gallup policy on what respondent level data can be shared openly:
+
+From Zacc Ritter (Gallup), March 8 2021:
+
+> For general public release, we ask our clients to limit the
+> demographic/background variables to the following: Weights (wgt),
+> country (WP5), gender (WP1219), age (WP1220), education (WP3117),
+> income (INCOME_2), and urbanicity (WP14).
+>
+> We ask that when NHH makes its 2018 Fairness Around the World data set
+> available to the general public, it sticks to this delimited set of
+> variables.
+>
+> In the specific case that another researcher reaches out for a more
+> comprehensive data set, Gallup is willing to reach a compromise. NHH
+> may provide that specific researcher the more extensive list of
+> variables specified below. We ask that NHH not release any of other
+> respondent-level items to that researcher not specified below.
+>
+> 1.  SURVEY STRUCTURE: Weights (wgt), PSUs (WP12259), and country
+>     (WP5).
+> 2.  BACKGROUND VARIABLES ON INDIVIDUALS/HOUSEHOLDS: gender (WP1219),
+>     age (WP1220), marital status (WP1223), number of children under 15
+>     years of age (WP1230), education (WP3117), income (INCOME_2 and
+>     HHSIZE), employment status (EMP_2010), whether religion is
+>     important (WP119), urbanicity (WP14), and whether they are
+>     first-generation immigrants (WP4657)
+
+## Gallup policy on access to World Poll respondent level data for verification purposes
+
+From communication with Zacc Ritter (Gallup), March 9, 2021:
+
+> Access to the World Poll Respondent Level Data will be granted to
+> individuals representing academic review boards where necessary for
+> the purposes of verification of research undertaken using the Client
+> commissioned items and World Poll Respondent Level Data. All
+> reasonable alternatives must first be exhausted with the reviewing
+> body, such as the sharing of topline data. The researcher and Client's
+> Project Manager must notify Gallup in writing of such a requirement
+> including a copy of the correspondence from the reviewing body. Upon
+> such a request Gallup will grant the reviewer access to the data for a
+> limited duration for the sole purpose of review.
+
+# Extracting public subset
+
+```{r}
+WP_selfishness_public <- readRDS(here::here("data","WP_analytical.rds")) %>%
+  filter(in_experiment==TRUE) %>%
+  dplyr::select(iso_a3, # Recoding of WP5 
+                wgt, # Population weights
+                more_selfish, # From Fairness Across the World module
+                more_criminal, # From Fairness Across the World module
+                gov_should_reduce_inequality, #From Fairness Across the World module
+                inequality_unfair, # From Fairness Across the World module
+                WP1219, WP1220, WP3117, income_2, WP14) # Core Gallup World Poll variables
+saveRDS(WP_selfishness_public, file=here::here("pnas_BSRI/data/WP_selfishness_public.rds"))
+write_dta(WP_selfishness_public, here::here("pnas_BSRI/data/WP_selfishness_public.dta"))
+write_csv(WP_selfishness_public, file=here::here("pnas_BSRI/data/WP_selfishness_public.csv"))
+```
+
+# Session Info
+
+```{r}
+sessionInfo()
+```
