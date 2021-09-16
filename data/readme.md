@@ -1,6 +1,6 @@
 # The program files
 
-The program files are available on github.
+The program files are available on github: `git@github.com:FAIR-NHH/BSRI.git`
 
 # The data files
 
