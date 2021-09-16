@@ -4,7 +4,7 @@ The program files are available on github.
 
 # The data files
 
-The analysis files relies on three different data files. 
+The analysis files relies on four different data files. 
 
 1. `BSRI_external_data.{dta,csv}` Aggregate data taken from sources outside Gallup World Poll.
 2. `WP_selfishness_public.{dta,csv}` Gallup World Poll 2018 data -- publicly available subset.
@@ -18,6 +18,8 @@ researcher and Client’s Project Manager must notify Gallup in writing of such 
 requirement including a copy of the correspondence from the reviewing body.
 Upon such a request Gallup will grant the reviewer access to the data for a
 limited duration for the sole purpose of review."
+4. `Durante2017.csv` Data from Durante et al (2017) with added manual coding by us of whether the rich are colder than the poor in relevant sample.
+
 
 Below is a full description of the variables
 used in the different subsets. 
@@ -104,3 +106,12 @@ reduce the economic differences between the rich and the poor."
  (yes/no)". Coded 0/1, 1 for yes.
 - donated_money: Convenience 0/1 recoding of Gallup WP108: "Have you done any of the following in the past month? How about *Donated Money*. Coded 0/1, 1 for yes.
 - get_ahead: Convenience 0/1 recoding of Gallup WP128: "Can people in this country get ahead by working hard, or not? (yes/no)". Coded 0/1, 1 for yes.
+
+# Variables in Durante2017.csv
+
+- country: Name of country
+- sample_comment: If there is a particular subset of the national data (string).
+- year: Year of data collection.
+- WC_correlation: Reported warmth/competence correlation in Durante (2017).
+- Rich_colder: A yes/no coding of whether the rich are colder than the poor (coded by visual inspection of scatter graphs).
+- SR_comment: Our comment on the visual coding of `Rich_colder`. If any substitution of literal "rich" and "poor" groups was necessary, or if we could not find relevant comparison groups (or the scatter graphs themselves).
