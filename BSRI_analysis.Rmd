@@ -21,10 +21,13 @@ library("estimatr")
 library("modelsummary")
 library("kableExtra")
 library("car")
+library("fastDummies")
+library("sf")
 library(showtext)
 showtext_auto()
 source("functions.R")
 data(World)
+st_crs(World) <- 4326  # https://bit.ly/39dNc3i
 ```
 
 
@@ -167,7 +170,7 @@ CCC
 "
 overview_display <- gl_hist + E8 + averages_with_se + plot_annotation(tag_levels = 'a') + plot_layout(design=overview_layout)
 overview_display
-ggsave(here::here("graphs","Figure-1.pdf"), width=11.4, height=8, units="cm")
+ggsave(here::here("graphs","Figure-1.pdf"), width=17.8, height=14.0, units="cm")
 ```
 
 ## Histograms for each country (Figure in Supporting Information)
@@ -367,8 +370,17 @@ aggregate_names <- c("zCorruption"="Corruption",
                      "zSchooling"="Education" )
 msummary(list(l1,l2,l3,l4,l5,l6),
          title="Country level associations", coef_map=aggregate_names,
-         gof_omit = "R2 Adj.|Num|se_type", stars = TRUE) %>%
+         stars = c("*"=0.1, "**"=0.05, "***"=0.01),
+         gof_omit ="R2.Adj|AIC|BIC|Log.Lik.|F") %>%
   add_header_above(c(" "=1, "Separate"=5, "Joint"=1))
+msummary(list(l1,l2,l3,l4,l5,l6),
+         title="Country level associations", coef_map=aggregate_names,
+         stars = c("*"=0.1, "**"=0.05, "***"=0.01),
+         output = "latex",
+         gof_omit ="R2.Adj|AIC|BIC|Log.Lik.|F") %>%
+  add_header_above(c(" "=1, "Separate"=5, "Joint"=1)) %>%
+  cat(file=here::here("tables","selfishness_between_bg.tex"))
+
 ```
 
 ```{r}
@@ -499,10 +511,10 @@ In how many countries is there a majority  disagreeing with belief in crime **am
 ```{r}
 table(belief_classification$disagree_crime_amongBSR > 0.5)
 ```
-In how many countries is there a at least 20% disagreeing with belief in crime **among** those who believe in SRI?
+In how many countries is there a at least 30% disagreeing with belief in crime **among** those who believe in SRI?
 
 ```{r}
-table(belief_classification$disagree_crime_amongBSR > 0.2)
+table(belief_classification$disagree_crime_amongBSR > 0.3)
 ```
 
 
@@ -621,7 +633,7 @@ msummary(list("(1)"=hdi_1, "(2)"=hdi_2,
               "(5)"=cv_1, "(6)"=cv_2), 
          coef_map = hdi_names,
          gof_omit = "R2 Adj.|se_type|AIC|BIC|Log.Lik.|F", 
-         stars = TRUE) %>%
+         stars = c("*"=0.1, "**"=0.05, "***"=0.01)) %>%
   add_header_above(c(" ", "Including HDI"=2, "Including GPI"=2, "Business corruption"=1, "Government corruption"=1)) %>%
   add_header_above(c(" "=1, "Belief in Selfish Rich Inequality"=6))
 
@@ -677,12 +689,14 @@ aggregate_namesL <- c("zCorruption"="Corruption",
                      "(Intercept)"="Constant")
 msummary(list("(1)"=lcorruption,"(2)"=lshadow_ec, "(3)"=lorg_crime, "(4)"=lall, "(5)"=lgaincrime),
          title="Country level associations", coef_map=aggregate_namesL,
-         gof_omit = "R2 Adj.|se_type|AIC|BIC|Log.Lik.|F", stars = c('*'=0.1, '**'=0.05, '***'=0.01)) %>%
+         gof_omit = "R2 Adj.|se_type|AIC|BIC|Log.Lik.|F", 
+         stars = c('*'=0.1, '**'=0.05, '***'=0.01)) %>%
   add_header_above(c(" "=1, "Belief in Selfish Rich Inequality "=5))
 msummary(list("(1)"=lcorruption,"(2)"=lshadow_ec, "(3)"=lorg_crime, "(4)"=lall, "(5)"=lgaincrime),
          title="Country level associations", coef_map=aggregate_namesL,
          gof_omit = "R2 Adj.|se_type|AIC|BIC|Log.Lik.|F",
-         output = "latex", stars = c('*'=0.1, '**'=0.05, '***'=0.01)) %>%
+         output = "latex", 
+         stars = c('*'=0.1, '**'=0.05, '***'=0.01)) %>%
   add_header_above(c(" "=1, "Belief in Selfish Rich Inequality "=5)) %>%
   cat(file=here::here("tables","crime_measures.tex"))
 
@@ -718,7 +732,8 @@ aggregate_namesR <- c("zget_ahead"="Mobility",
                      "zSchooling"="Schooling" )
 msummary(list(smobility, smobilitya, scorruption, scorruptiona),
          title="Country level associations", coef_map=aggregate_namesR,
-         gof_omit = "R2 Adj.|se_type|AIC|BIC|Log.Lik.|F", stars = TRUE) %>%
+         gof_omit = "R2 Adj.|se_type|AIC|BIC|Log.Lik.|F", 
+         stars = c("*"=0.1, "**"=0.05, "***"=0.01)) %>%
   add_header_above(c(" "=1, "Corruption "=2, "Mobility"=2))
 ```
 
@@ -856,17 +871,21 @@ bg_names <- c('inc_rank_oecd1' = "Income rank (within country, 0--1)",
               'd_maleTRUE' = "Male (d)",
               'z_age' = "Age (Z-score)",
               'd_marriedTRUE' = "Married (d)",
-              'z_n_children' = "# children (Z-score)",
+              'z_n_children' = "n of children (Z-score)",
               'd_immigrantTRUE' = "Immigrant (d)",
               'd_workingTRUE' = "Employed (d)",
               'd_urbanTRUE' = "Urban (d)")
 msummary(bgmodels, title="Associations within countries", 
          coef_map=bg_names,
-         gof_omit = "R2 Adj.|se_type") %>%
+         gof_omit = "R2 Adj.|se_type",
+         stars = c("*"=0.1, "**"=0.05, "***"=0.01)
+         ) %>%
     add_header_above(c(" "=1, "Belief in Selfish Rich Inequality"=10))
 msummary(bgmodels, title="Associations within countries", 
          coef_map=bg_names,
-         gof_omit = "R2 Adj.|se_type", output="latex") %>%
+         gof_omit = "R2 Adj.|se_type",
+         stars = c("*"=0.1, "**"=0.05, "***"=0.01),
+         output="latex") %>%
   add_header_above(c(" "=1, "Belief in Selfish Rich Inequality"=10)) %>%
   cat(file=here::here("tables","selfishness_within_bg.tex"))
 ```
@@ -963,7 +982,7 @@ within_display <- polarization_selfish_rich + within_plot +
   plot_annotation(tag_levels = 'a') + 
   plot_layout(design=within_layout)
 within_display
-ggsave(here::here("graphs","Figure-3.pdf"), width=11.4, height=12, units="cm")
+ggsave(here::here("graphs","Figure-3.pdf"), width=17.8, height=14, units="cm")
 ```
 
 ## Polarization for each country (Figure in Supporting Information)
@@ -1055,12 +1074,14 @@ catt_names <- c("mean_Bs"="Belief in Selfish Rich Inequality (1--5)",
                "(Intercept)"="Constant")
 msummary(list("(1)"=catt1, "(2)"=catt2, "(4)"=catt4, "(5)"=catt5),
          coef_map = catt_names,
-         of_omit ="R2 Adj.|AIC|BIC|Log.Lik.",
+         gof_omit ="R2 Adj.|AIC|BIC|Log.Lik.",
+         stars = c("*"=0.1, "**"=0.05, "***"=0.01),
          title = "Attitudes vs beliefs---between information") %>%
   add_header_above(c(" " = 1, "Inequality is unfair" = 2, "Should reduce inequality" = 2))
 msummary(list("(1)"=catt1, "(2)"=catt2, "(4)"=catt4, "(5)"=catt5),
          coef_map = catt_names,
-         of_omit ="R2 Adj.|AIC|BIC|Log.Lik.",
+         gof_omit ="R2 Adj.|AIC|BIC|Log.Lik.",
+         stars = c("*"=0.1, "**"=0.05, "***"=0.01),
          title = "Attitudes vs beliefs---between information",
          output = "latex") %>%
   add_header_above(c(" " = 1, "Inequality is unfair" = 2, "Should reduce inequality" = 2)) %>%
@@ -1123,12 +1144,14 @@ att5 <- lm_robust(gov_should_reduce_inequality ~ more_selfish + inc_rank_oecd1 +
 att_all <- list(att1,att2,att4,att5)
 att_names <- c('more_selfish' = "Belief in the selfish rich hypothesis",  bg_names)
 
-msummary(att_all, coef_map = att_names, gof_omit = "R2 Adj.|se_type", 
+msummary(att_all, coef_map = att_names, gof_omit = "R2 Adj.|se_type",
+         stars = c("*"=0.1, "**"=0.05, "***"=0.01),
          title="Attitudes vs beliefs---within information") %>%
   add_header_above(c(" " = 1, "Inequality is unfair" = 2, "Should reduce inequality" = 2))  
 
 msummary(att_all, coef_map = att_names, gof_omit = "R2 Adj.|se_type", 
          output = 'latex',
+         stars = c("*"=0.1, "**"=0.05, "***"=0.01),
          title="Attitudes vs beliefs---within information") %>%
   add_header_above(c(" " = 1, "Inequality is unfair" = 2, "Should reduce inequality" = 2))  %>%
   cat(file= here::here("tables","attitudes_vs_beliefs_individuals.tex"))
@@ -1288,11 +1311,14 @@ religion_r6 <- lm_robust(gov_should_reduce_inequality ~ more_selfish + d_religio
 ```{r}
 msummary(list(religion_r1, religion_r2, religion_r3, religion_r4, religion_r5, religion_r6), 
          title="On subsample with importance of religion variable", 
-         coef_map=bg_namesr, gof_omit = "R2 Adj.|se_type") %>%
+         coef_map=bg_namesr, gof_omit = "R2 Adj.|se_type",
+         stars = c("*"=0.1, "**"=0.05, "***"=0.01)
+) %>%
   add_header_above(c(" " = 1, "Belief in Selfish Rich" = 2, "Inequality is unfair"=2, "Government should aim..."=2))  
 msummary(list(religion_r1, religion_r2, religion_r3, religion_r4, religion_r5, religion_r6), 
          title="On subsample with importance of religion variable", 
          coef_map=bg_namesr, gof_omit = "R2 Adj.|se_type",
+         stars = c("*"=0.1, "**"=0.05, "***"=0.01),
          output = 'latex') %>%
   add_header_above(c(" " = 1, "Belief in Selfish Rich" = 2, "Inequality is unfair"=2, "Government should aim..."=2))  %>%
   cat(file= here::here("tables","religion_subsample.tex")) 

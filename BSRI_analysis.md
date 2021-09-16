@@ -3,7 +3,7 @@ by Ingvild Almås, Alexander W. Cappelen, Erik Ø. Sørensen and Bertil
 Tungodden
 ================
 Erik Ø. Sørensen
-15 september, 2021
+17 september, 2021
 
 -   [Summaries of SR support and missing
     variables](#summaries-of-sr-support-and-missing-variables)
@@ -274,7 +274,7 @@ overview_display
 ![](BSRI_analysis_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->
 
 ``` r
-ggsave(here::here("graphs","Figure-1.pdf"), width=11.4, height=8, units="cm")
+ggsave(here::here("graphs","Figure-1.pdf"), width=17.8, height=14.0, units="cm")
 ```
 
 ## Histograms for each country (Figure in Supporting Information)
@@ -643,12 +643,10 @@ aggregate_names <- c("zCorruption"="Corruption",
                      "zSchooling"="Education" )
 msummary(list(l1,l2,l3,l4,l5,l6),
          title="Country level associations", coef_map=aggregate_names,
-         gof_omit = "R2 Adj.|Num|se_type", stars = TRUE) %>%
+         stars = c("*"=0.1, "**"=0.05, "***"=0.01),
+         gof_omit ="R2.Adj|AIC|BIC|Log.Lik.|F") %>%
   add_header_above(c(" "=1, "Separate"=5, "Joint"=1))
 ```
-
-    ## Warning: In version 0.8.0 of the `modelsummary` package, the default significance markers produced by the `stars=TRUE` argument were changed to be consistent with R's defaults.
-    ## This warning is displayed once per session.
 
 <table style="NAborder-bottom: 0; width: auto !important; margin-left: auto; margin-right: auto;" class="table">
 <caption>
@@ -717,7 +715,7 @@ Corruption
 <td style="text-align:center;">
 </td>
 <td style="text-align:center;">
-0.158\*
+0.158\*\*
 </td>
 </tr>
 <tr>
@@ -888,6 +886,29 @@ Education
 </tr>
 <tr>
 <td style="text-align:left;">
+Num.Obs.
+</td>
+<td style="text-align:center;">
+60
+</td>
+<td style="text-align:center;">
+60
+</td>
+<td style="text-align:center;">
+59
+</td>
+<td style="text-align:center;">
+60
+</td>
+<td style="text-align:center;">
+58
+</td>
+<td style="text-align:center;">
+57
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
 R2
 </td>
 <td style="text-align:center;">
@@ -909,108 +930,37 @@ R2
 0.426
 </td>
 </tr>
-<tr>
-<td style="text-align:left;">
-AIC
-</td>
-<td style="text-align:center;">
-30.8
-</td>
-<td style="text-align:center;">
-39.8
-</td>
-<td style="text-align:center;">
-56.2
-</td>
-<td style="text-align:center;">
-38.9
-</td>
-<td style="text-align:center;">
-37.8
-</td>
-<td style="text-align:center;">
-33.3
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-BIC
-</td>
-<td style="text-align:center;">
-37.0
-</td>
-<td style="text-align:center;">
-46.1
-</td>
-<td style="text-align:center;">
-62.4
-</td>
-<td style="text-align:center;">
-45.2
-</td>
-<td style="text-align:center;">
-44.0
-</td>
-<td style="text-align:center;">
-47.6
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Log.Lik.
-</td>
-<td style="text-align:center;">
-−12.381
-</td>
-<td style="text-align:center;">
-−16.914
-</td>
-<td style="text-align:center;">
-−25.108
-</td>
-<td style="text-align:center;">
-−16.448
-</td>
-<td style="text-align:center;">
-−15.894
-</td>
-<td style="text-align:center;">
-−9.662
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-F
-</td>
-<td style="text-align:center;">
-36.599
-</td>
-<td style="text-align:center;">
-23.333
-</td>
-<td style="text-align:center;">
-2.284
-</td>
-<td style="text-align:center;">
-24.606
-</td>
-<td style="text-align:center;">
-24.086
-</td>
-<td style="text-align:center;">
-7.579
-</td>
-</tr>
 </tbody>
 <tfoot>
 <tr>
 <td style="padding: 0; " colspan="100%">
-<sup></sup> + p &lt; 0.1, \* p &lt; 0.05, \*\* p &lt; 0.01, \*\*\* p
-&lt; 0.001
+<sup></sup> \* p &lt; 0.1, \*\* p &lt; 0.05, \*\*\* p &lt; 0.01
 </td>
 </tr>
 </tfoot>
 </table>
+
+``` r
+msummary(list(l1,l2,l3,l4,l5,l6),
+         title="Country level associations", coef_map=aggregate_names,
+         stars = c("*"=0.1, "**"=0.05, "***"=0.01),
+         output = "latex",
+         gof_omit ="R2.Adj|AIC|BIC|Log.Lik.|F") %>%
+  add_header_above(c(" "=1, "Separate"=5, "Joint"=1)) %>%
+  cat(file=here::here("tables","selfishness_between_bg.tex"))
+```
+
+    ## Warning: To compile a LaTeX document with this table, the following commands must be placed in the document preamble:
+    ## 
+    ## \usepackage{booktabs}
+    ## \usepackage{siunitx}
+    ## \newcolumntype{d}{S[input-symbols = ()]}
+    ## 
+    ## To disable `siunitx` and prevent `modelsummary` from wrapping numeric entries in `\num{}`, call:
+    ## 
+    ## options("modelsummary_format_numeric_latex" = "plain")
+    ## 
+    ## This warning is displayed once per session.
 
 ``` r
 summary(l6)
@@ -1882,16 +1832,16 @@ table(belief_classification$disagree_crime_amongBSR > 0.5)
     ## FALSE  TRUE 
     ##    55     5
 
-In how many countries is there a at least 20% disagreeing with belief in
+In how many countries is there a at least 30% disagreeing with belief in
 crime **among** those who believe in SRI?
 
 ``` r
-table(belief_classification$disagree_crime_amongBSR > 0.2)
+table(belief_classification$disagree_crime_amongBSR > 0.3)
 ```
 
     ## 
     ## FALSE  TRUE 
-    ##    38    22
+    ##    46    14
 
 ## Belief in crime and mobility (subfigure)
 
@@ -2535,18 +2485,6 @@ msummary(list("(1)"=wdi1,"(2)"=wdi2,"(3)"=wdi3,"(4)"=wdi4,"(5)"=wdi5,"(6)"=wdi6,
   cat(file=here::here("tables","WDI_variables.tex"))
 ```
 
-    ## Warning: To compile a LaTeX document with this table, the following commands must be placed in the document preamble:
-    ## 
-    ## \usepackage{booktabs}
-    ## \usepackage{siunitx}
-    ## \newcolumntype{d}{S[input-symbols = ()]}
-    ## 
-    ## To disable `siunitx` and prevent `modelsummary` from wrapping numeric entries in `\num{}`, call:
-    ## 
-    ## options("modelsummary_format_numeric_latex" = "plain")
-    ## 
-    ## This warning is displayed once per session.
-
 ## Robustness of cross country analysis (Table in Supporting Information)
 
 First replacing welfare measures with HDI, then Peace, then exchanging
@@ -2571,7 +2509,7 @@ msummary(list("(1)"=hdi_1, "(2)"=hdi_2,
               "(5)"=cv_1, "(6)"=cv_2), 
          coef_map = hdi_names,
          gof_omit = "R2 Adj.|se_type|AIC|BIC|Log.Lik.|F", 
-         stars = TRUE) %>%
+         stars = c("*"=0.1, "**"=0.05, "***"=0.01)) %>%
   add_header_above(c(" ", "Including HDI"=2, "Including GPI"=2, "Business corruption"=1, "Government corruption"=1)) %>%
   add_header_above(c(" "=1, "Belief in Selfish Rich Inequality"=6))
 ```
@@ -2865,8 +2803,8 @@ Government corruption
                         <tfoot>
                         <tr>
                         <td style="padding: 0; " colspan="100%">
-                        <sup></sup> + p &lt; 0.1, \* p &lt; 0.05, \*\* p
-                        &lt; 0.01, \*\*\* p &lt; 0.001
+                        <sup></sup> \* p &lt; 0.1, \*\* p &lt; 0.05,
+                        \*\*\* p &lt; 0.01
                         </td>
                         </tr>
                         </tfoot>
@@ -2920,7 +2858,8 @@ aggregate_namesL <- c("zCorruption"="Corruption",
                      "(Intercept)"="Constant")
 msummary(list("(1)"=lcorruption,"(2)"=lshadow_ec, "(3)"=lorg_crime, "(4)"=lall, "(5)"=lgaincrime),
          title="Country level associations", coef_map=aggregate_namesL,
-         gof_omit = "R2 Adj.|se_type|AIC|BIC|Log.Lik.|F", stars = c('*'=0.1, '**'=0.05, '***'=0.01)) %>%
+         gof_omit = "R2 Adj.|se_type|AIC|BIC|Log.Lik.|F", 
+         stars = c('*'=0.1, '**'=0.05, '***'=0.01)) %>%
   add_header_above(c(" "=1, "Belief in Selfish Rich Inequality "=5))
 ```
 
@@ -3187,7 +3126,8 @@ Belief in Selfish Rich Inequality
 msummary(list("(1)"=lcorruption,"(2)"=lshadow_ec, "(3)"=lorg_crime, "(4)"=lall, "(5)"=lgaincrime),
          title="Country level associations", coef_map=aggregate_namesL,
          gof_omit = "R2 Adj.|se_type|AIC|BIC|Log.Lik.|F",
-         output = "latex", stars = c('*'=0.1, '**'=0.05, '***'=0.01)) %>%
+         output = "latex", 
+         stars = c('*'=0.1, '**'=0.05, '***'=0.01)) %>%
   add_header_above(c(" "=1, "Belief in Selfish Rich Inequality "=5)) %>%
   cat(file=here::here("tables","crime_measures.tex"))
 ```
@@ -3293,7 +3233,8 @@ aggregate_namesR <- c("zget_ahead"="Mobility",
                      "zSchooling"="Schooling" )
 msummary(list(smobility, smobilitya, scorruption, scorruptiona),
          title="Country level associations", coef_map=aggregate_namesR,
-         gof_omit = "R2 Adj.|se_type|AIC|BIC|Log.Lik.|F", stars = TRUE) %>%
+         gof_omit = "R2 Adj.|se_type|AIC|BIC|Log.Lik.|F", 
+         stars = c("*"=0.1, "**"=0.05, "***"=0.01)) %>%
   add_header_above(c(" "=1, "Corruption "=2, "Mobility"=2))
 ```
 
@@ -3407,7 +3348,7 @@ GNI
 <td style="text-align:center;">
 </td>
 <td style="text-align:center;">
-−0.567\*\*
+−0.567\*\*\*
 </td>
 <td style="text-align:center;">
 </td>
@@ -3465,12 +3406,12 @@ Mean age
 <td style="text-align:center;">
 </td>
 <td style="text-align:center;">
-−0.361\*
+−0.361\*\*
 </td>
 <td style="text-align:center;">
 </td>
 <td style="text-align:center;">
-−0.652\*
+−0.652\*\*
 </td>
 </tr>
 <tr>
@@ -3554,8 +3495,7 @@ R2
 <tfoot>
 <tr>
 <td style="padding: 0; " colspan="100%">
-<sup></sup> + p &lt; 0.1, \* p &lt; 0.05, \*\* p &lt; 0.01, \*\*\* p
-&lt; 0.001
+<sup></sup> \* p &lt; 0.1, \*\* p &lt; 0.05, \*\*\* p &lt; 0.01
 </td>
 </tr>
 </tfoot>
@@ -3696,17 +3636,19 @@ bg_names <- c('inc_rank_oecd1' = "Income rank (within country, 0--1)",
               'd_maleTRUE' = "Male (d)",
               'z_age' = "Age (Z-score)",
               'd_marriedTRUE' = "Married (d)",
-              'z_n_children' = "# children (Z-score)",
+              'z_n_children' = "n of children (Z-score)",
               'd_immigrantTRUE' = "Immigrant (d)",
               'd_workingTRUE' = "Employed (d)",
               'd_urbanTRUE' = "Urban (d)")
 msummary(bgmodels, title="Associations within countries", 
          coef_map=bg_names,
-         gof_omit = "R2 Adj.|se_type") %>%
+         gof_omit = "R2 Adj.|se_type",
+         stars = c("*"=0.1, "**"=0.05, "***"=0.01)
+         ) %>%
     add_header_above(c(" "=1, "Belief in Selfish Rich Inequality"=10))
 ```
 
-<table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;">
+<table style="NAborder-bottom: 0; width: auto !important; margin-left: auto; margin-right: auto;" class="table">
 <caption>
 Associations within countries
 </caption>
@@ -3766,7 +3708,7 @@ Belief in Selfish Rich Inequality
                                         0–1)
                                         </td>
                                         <td style="text-align:center;">
-                                        −0.319
+                                        −0.319\*\*\*
                                         </td>
                                         <td style="text-align:center;">
                                         </td>
@@ -3785,7 +3727,7 @@ Belief in Selfish Rich Inequality
                                         <td style="text-align:center;">
                                         </td>
                                         <td style="text-align:center;">
-                                        −0.236
+                                        −0.236\*\*\*
                                         </td>
                                         </tr>
                                         <tr>
@@ -3821,7 +3763,7 @@ Belief in Selfish Rich Inequality
                                         <td style="text-align:center;">
                                         </td>
                                         <td style="text-align:center;">
-                                        −0.234
+                                        −0.234\*\*\*
                                         </td>
                                         <td style="text-align:center;">
                                         </td>
@@ -3838,7 +3780,7 @@ Belief in Selfish Rich Inequality
                                         <td style="text-align:center;">
                                         </td>
                                         <td style="text-align:center;">
-                                        −0.166
+                                        −0.166\*\*\*
                                         </td>
                                         </tr>
                                         <tr>
@@ -3876,7 +3818,7 @@ Belief in Selfish Rich Inequality
                                         <td style="text-align:center;">
                                         </td>
                                         <td style="text-align:center;">
-                                        0.063
+                                        0.063\*\*\*
                                         </td>
                                         <td style="text-align:center;">
                                         </td>
@@ -3891,7 +3833,7 @@ Belief in Selfish Rich Inequality
                                         <td style="text-align:center;">
                                         </td>
                                         <td style="text-align:center;">
-                                        0.080
+                                        0.080\*\*\*
                                         </td>
                                         </tr>
                                         <tr>
@@ -3931,7 +3873,7 @@ Belief in Selfish Rich Inequality
                                         <td style="text-align:center;">
                                         </td>
                                         <td style="text-align:center;">
-                                        0.079
+                                        0.079\*\*\*
                                         </td>
                                         <td style="text-align:center;">
                                         </td>
@@ -3944,7 +3886,7 @@ Belief in Selfish Rich Inequality
                                         <td style="text-align:center;">
                                         </td>
                                         <td style="text-align:center;">
-                                        0.054
+                                        0.054\*\*\*
                                         </td>
                                         </tr>
                                         <tr>
@@ -3986,7 +3928,7 @@ Belief in Selfish Rich Inequality
                                         <td style="text-align:center;">
                                         </td>
                                         <td style="text-align:center;">
-                                        0.065
+                                        0.065\*\*\*
                                         </td>
                                         <td style="text-align:center;">
                                         </td>
@@ -4028,7 +3970,7 @@ Belief in Selfish Rich Inequality
                                         </tr>
                                         <tr>
                                         <td style="text-align:left;">
-                                        \# children (Z-score)
+                                        n of children (Z-score)
                                         </td>
                                         <td style="text-align:center;">
                                         </td>
@@ -4206,7 +4148,7 @@ Belief in Selfish Rich Inequality
                                         <td style="text-align:center;">
                                         </td>
                                         <td style="text-align:center;">
-                                        −0.066
+                                        −0.066\*\*
                                         </td>
                                         <td style="text-align:center;">
                                         −0.007
@@ -4309,12 +4251,22 @@ Belief in Selfish Rich Inequality
                                         </td>
                                         </tr>
                                         </tbody>
+                                        <tfoot>
+                                        <tr>
+                                        <td style="padding: 0; " colspan="100%">
+                                        <sup></sup> \* p &lt; 0.1, \*\*
+                                        p &lt; 0.05, \*\*\* p &lt; 0.01
+                                        </td>
+                                        </tr>
+                                        </tfoot>
                                         </table>
 
 ``` r
 msummary(bgmodels, title="Associations within countries", 
          coef_map=bg_names,
-         gof_omit = "R2 Adj.|se_type", output="latex") %>%
+         gof_omit = "R2 Adj.|se_type",
+         stars = c("*"=0.1, "**"=0.05, "***"=0.01),
+         output="latex") %>%
   add_header_above(c(" "=1, "Belief in Selfish Rich Inequality"=10)) %>%
   cat(file=here::here("tables","selfishness_within_bg.tex"))
 ```
@@ -4497,7 +4449,7 @@ within_display
 ![](BSRI_analysis_files/figure-gfm/unnamed-chunk-58-1.png)<!-- -->
 
 ``` r
-ggsave(here::here("graphs","Figure-3.pdf"), width=11.4, height=12, units="cm")
+ggsave(here::here("graphs","Figure-3.pdf"), width=17.8, height=14, units="cm")
 ```
 
 ## Polarization for each country (Figure in Supporting Information)
@@ -4596,12 +4548,13 @@ catt_names <- c("mean_Bs"="Belief in Selfish Rich Inequality (1--5)",
                "(Intercept)"="Constant")
 msummary(list("(1)"=catt1, "(2)"=catt2, "(4)"=catt4, "(5)"=catt5),
          coef_map = catt_names,
-         of_omit ="R2 Adj.|AIC|BIC|Log.Lik.",
+         gof_omit ="R2 Adj.|AIC|BIC|Log.Lik.",
+         stars = c("*"=0.1, "**"=0.05, "***"=0.01),
          title = "Attitudes vs beliefs---between information") %>%
   add_header_above(c(" " = 1, "Inequality is unfair" = 2, "Should reduce inequality" = 2))
 ```
 
-<table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;">
+<table style="NAborder-bottom: 0; width: auto !important; margin-left: auto; margin-right: auto;" class="table">
 <caption>
 Attitudes vs beliefs—between information
 </caption>
@@ -4651,16 +4604,16 @@ Should reduce inequality
                 Belief in Selfish Rich Inequality (1–5)
                 </td>
                 <td style="text-align:center;">
-                0.620
+                0.620\*\*\*
                 </td>
                 <td style="text-align:center;">
-                0.919
+                0.919\*\*\*
                 </td>
                 <td style="text-align:center;">
-                0.482
+                0.482\*\*\*
                 </td>
                 <td style="text-align:center;">
-                0.707
+                0.707\*\*\*
                 </td>
                 </tr>
                 <tr>
@@ -4829,16 +4782,16 @@ Should reduce inequality
                 Constant
                 </td>
                 <td style="text-align:center;">
-                1.834
+                1.834\*\*\*
                 </td>
                 <td style="text-align:center;">
                 0.794
                 </td>
                 <td style="text-align:center;">
-                2.581
+                2.581\*\*\*
                 </td>
                 <td style="text-align:center;">
-                1.801
+                1.801\*\*\*
                 </td>
                 </tr>
                 <tr>
@@ -4893,74 +4846,6 @@ Should reduce inequality
                 </tr>
                 <tr>
                 <td style="text-align:left;">
-                R2 Adj.
-                </td>
-                <td style="text-align:center;">
-                0.290
-                </td>
-                <td style="text-align:center;">
-                0.382
-                </td>
-                <td style="text-align:center;">
-                0.290
-                </td>
-                <td style="text-align:center;">
-                0.376
-                </td>
-                </tr>
-                <tr>
-                <td style="text-align:left;">
-                AIC
-                </td>
-                <td style="text-align:center;">
-                53.0
-                </td>
-                <td style="text-align:center;">
-                43.3
-                </td>
-                <td style="text-align:center;">
-                22.7
-                </td>
-                <td style="text-align:center;">
-                17.2
-                </td>
-                </tr>
-                <tr>
-                <td style="text-align:left;">
-                BIC
-                </td>
-                <td style="text-align:center;">
-                59.2
-                </td>
-                <td style="text-align:center;">
-                59.7
-                </td>
-                <td style="text-align:center;">
-                29.0
-                </td>
-                <td style="text-align:center;">
-                33.5
-                </td>
-                </tr>
-                <tr>
-                <td style="text-align:left;">
-                Log.Lik.
-                </td>
-                <td style="text-align:center;">
-                −23.476
-                </td>
-                <td style="text-align:center;">
-                −13.658
-                </td>
-                <td style="text-align:center;">
-                −8.361
-                </td>
-                <td style="text-align:center;">
-                −0.594
-                </td>
-                </tr>
-                <tr>
-                <td style="text-align:left;">
                 F
                 </td>
                 <td style="text-align:center;">
@@ -4977,12 +4862,21 @@ Should reduce inequality
                 </td>
                 </tr>
                 </tbody>
+                <tfoot>
+                <tr>
+                <td style="padding: 0; " colspan="100%">
+                <sup></sup> \* p &lt; 0.1, \*\* p &lt; 0.05, \*\*\* p
+                &lt; 0.01
+                </td>
+                </tr>
+                </tfoot>
                 </table>
 
 ``` r
 msummary(list("(1)"=catt1, "(2)"=catt2, "(4)"=catt4, "(5)"=catt5),
          coef_map = catt_names,
-         of_omit ="R2 Adj.|AIC|BIC|Log.Lik.",
+         gof_omit ="R2 Adj.|AIC|BIC|Log.Lik.",
+         stars = c("*"=0.1, "**"=0.05, "***"=0.01),
          title = "Attitudes vs beliefs---between information",
          output = "latex") %>%
   add_header_above(c(" " = 1, "Inequality is unfair" = 2, "Should reduce inequality" = 2)) %>%
@@ -5046,12 +4940,13 @@ att5 <- lm_robust(gov_should_reduce_inequality ~ more_selfish + inc_rank_oecd1 +
 att_all <- list(att1,att2,att4,att5)
 att_names <- c('more_selfish' = "Belief in the selfish rich hypothesis",  bg_names)
 
-msummary(att_all, coef_map = att_names, gof_omit = "R2 Adj.|se_type", 
+msummary(att_all, coef_map = att_names, gof_omit = "R2 Adj.|se_type",
+         stars = c("*"=0.1, "**"=0.05, "***"=0.01),
          title="Attitudes vs beliefs---within information") %>%
   add_header_above(c(" " = 1, "Inequality is unfair" = 2, "Should reduce inequality" = 2))  
 ```
 
-<table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;">
+<table style="NAborder-bottom: 0; width: auto !important; margin-left: auto; margin-right: auto;" class="table">
 <caption>
 Attitudes vs beliefs—within information
 </caption>
@@ -5101,16 +4996,16 @@ Model 4
 Belief in the selfish rich hypothesis
 </td>
 <td style="text-align:center;">
-0.228
+0.228\*\*\*
 </td>
 <td style="text-align:center;">
-0.231
+0.231\*\*\*
 </td>
 <td style="text-align:center;">
-0.148
+0.148\*\*\*
 </td>
 <td style="text-align:center;">
-0.150
+0.150\*\*\*
 </td>
 </tr>
 <tr>
@@ -5141,7 +5036,7 @@ Income rank (within country, 0–1)
 <td style="text-align:center;">
 </td>
 <td style="text-align:center;">
-−0.090
+−0.090\*\*
 </td>
 </tr>
 <tr>
@@ -5165,12 +5060,12 @@ High education (relative, d)
 <td style="text-align:center;">
 </td>
 <td style="text-align:center;">
-0.121
+0.121\*\*\*
 </td>
 <td style="text-align:center;">
 </td>
 <td style="text-align:center;">
-0.107
+0.107\*\*\*
 </td>
 </tr>
 <tr>
@@ -5194,7 +5089,7 @@ Male (d)
 <td style="text-align:center;">
 </td>
 <td style="text-align:center;">
-−0.038
+−0.038\*
 </td>
 <td style="text-align:center;">
 </td>
@@ -5276,7 +5171,7 @@ Married (d)
 </tr>
 <tr>
 <td style="text-align:left;">
-\# children (Z-score)
+n of children (Z-score)
 </td>
 <td style="text-align:center;">
 </td>
@@ -5310,7 +5205,7 @@ Immigrant (d)
 <td style="text-align:center;">
 </td>
 <td style="text-align:center;">
-−0.110
+−0.110\*\*
 </td>
 <td style="text-align:center;">
 </td>
@@ -5368,7 +5263,7 @@ Urban (d)
 <td style="text-align:center;">
 </td>
 <td style="text-align:center;">
-0.069
+0.069\*\*
 </td>
 <td style="text-align:center;">
 </td>
@@ -5425,11 +5320,19 @@ R2
 </td>
 </tr>
 </tbody>
+<tfoot>
+<tr>
+<td style="padding: 0; " colspan="100%">
+<sup></sup> \* p &lt; 0.1, \*\* p &lt; 0.05, \*\*\* p &lt; 0.01
+</td>
+</tr>
+</tfoot>
 </table>
 
 ``` r
 msummary(att_all, coef_map = att_names, gof_omit = "R2 Adj.|se_type", 
          output = 'latex',
+         stars = c("*"=0.1, "**"=0.05, "***"=0.01),
          title="Attitudes vs beliefs---within information") %>%
   add_header_above(c(" " = 1, "Inequality is unfair" = 2, "Should reduce inequality" = 2))  %>%
   cat(file= here::here("tables","attitudes_vs_beliefs_individuals.tex"))
@@ -5659,11 +5562,13 @@ religion_r6 <- lm_robust(gov_should_reduce_inequality ~ more_selfish + d_religio
 ``` r
 msummary(list(religion_r1, religion_r2, religion_r3, religion_r4, religion_r5, religion_r6), 
          title="On subsample with importance of religion variable", 
-         coef_map=bg_namesr, gof_omit = "R2 Adj.|se_type") %>%
+         coef_map=bg_namesr, gof_omit = "R2 Adj.|se_type",
+         stars = c("*"=0.1, "**"=0.05, "***"=0.01)
+) %>%
   add_header_above(c(" " = 1, "Belief in Selfish Rich" = 2, "Inequality is unfair"=2, "Government should aim..."=2))  
 ```
 
-<table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;">
+<table style="NAborder-bottom: 0; width: auto !important; margin-left: auto; margin-right: auto;" class="table">
 <caption>
 On subsample with importance of religion variable
 </caption>
@@ -5732,16 +5637,16 @@ Belief in Selfish Rich (1–5)
 <td style="text-align:center;">
 </td>
 <td style="text-align:center;">
-0.241
+0.241\*\*\*
 </td>
 <td style="text-align:center;">
-0.241
+0.241\*\*\*
 </td>
 <td style="text-align:center;">
-0.155
+0.155\*\*\*
 </td>
 <td style="text-align:center;">
-0.155
+0.155\*\*\*
 </td>
 </tr>
 <tr>
@@ -5808,10 +5713,10 @@ Religion important in daily life (d)
 Income rank (within country, 0–1)
 </td>
 <td style="text-align:center;">
-−0.236
+−0.236\*\*\*
 </td>
 <td style="text-align:center;">
-−0.235
+−0.235\*\*\*
 </td>
 <td style="text-align:center;">
 −0.065
@@ -5820,10 +5725,10 @@ Income rank (within country, 0–1)
 −0.068
 </td>
 <td style="text-align:center;">
-−0.107
+−0.107\*\*\*
 </td>
 <td style="text-align:center;">
-−0.104
+−0.104\*\*\*
 </td>
 </tr>
 <tr>
@@ -5853,22 +5758,22 @@ Income rank (within country, 0–1)
 High education (relative, d)
 </td>
 <td style="text-align:center;">
-−0.148
+−0.148\*\*\*
 </td>
 <td style="text-align:center;">
-−0.148
+−0.148\*\*\*
 </td>
 <td style="text-align:center;">
-0.132
+0.132\*\*\*
 </td>
 <td style="text-align:center;">
-0.132
+0.132\*\*\*
 </td>
 <td style="text-align:center;">
-0.121
+0.121\*\*\*
 </td>
 <td style="text-align:center;">
-0.121
+0.121\*\*\*
 </td>
 </tr>
 <tr>
@@ -5898,16 +5803,16 @@ High education (relative, d)
 Male (d)
 </td>
 <td style="text-align:center;">
-0.080
+0.080\*\*\*
 </td>
 <td style="text-align:center;">
-0.080
+0.080\*\*\*
 </td>
 <td style="text-align:center;">
-−0.037
+−0.037\*
 </td>
 <td style="text-align:center;">
-−0.039
+−0.039\*
 </td>
 <td style="text-align:center;">
 −0.013
@@ -5943,10 +5848,10 @@ Male (d)
 Age (Z-score)
 </td>
 <td style="text-align:center;">
-0.057
+0.057\*\*\*
 </td>
 <td style="text-align:center;">
-0.057
+0.057\*\*\*
 </td>
 <td style="text-align:center;">
 0.004
@@ -6003,7 +5908,7 @@ Married (d)
 −0.036
 </td>
 <td style="text-align:center;">
-−0.037
+−0.037\*
 </td>
 </tr>
 <tr>
@@ -6084,10 +5989,10 @@ Immigrant (d)
 −0.065
 </td>
 <td style="text-align:center;">
-−0.104
+−0.104\*
 </td>
 <td style="text-align:center;">
-−0.102
+−0.102\*
 </td>
 <td style="text-align:center;">
 −0.047
@@ -6174,10 +6079,10 @@ Urban (d)
 −0.005
 </td>
 <td style="text-align:center;">
-0.059
+0.059\*\*
 </td>
 <td style="text-align:center;">
-0.059
+0.059\*\*
 </td>
 <td style="text-align:center;">
 −0.014
@@ -6255,12 +6160,20 @@ R2
 </td>
 </tr>
 </tbody>
+<tfoot>
+<tr>
+<td style="padding: 0; " colspan="100%">
+<sup></sup> \* p &lt; 0.1, \*\* p &lt; 0.05, \*\*\* p &lt; 0.01
+</td>
+</tr>
+</tfoot>
 </table>
 
 ``` r
 msummary(list(religion_r1, religion_r2, religion_r3, religion_r4, religion_r5, religion_r6), 
          title="On subsample with importance of religion variable", 
          coef_map=bg_namesr, gof_omit = "R2 Adj.|se_type",
+         stars = c("*"=0.1, "**"=0.05, "***"=0.01),
          output = 'latex') %>%
   add_header_above(c(" " = 1, "Belief in Selfish Rich" = 2, "Inequality is unfair"=2, "Government should aim..."=2))  %>%
   cat(file= here::here("tables","religion_subsample.tex")) 
@@ -6494,11 +6407,11 @@ sessionInfo()
 
     ## R version 4.1.1 (2021-08-10)
     ## Platform: x86_64-pc-linux-gnu (64-bit)
-    ## Running under: Ubuntu 20.04.3 LTS
+    ## Running under: Ubuntu 18.04.5 LTS
     ## 
     ## Matrix products: default
-    ## BLAS:   /usr/lib/x86_64-linux-gnu/blas/libblas.so.3.9.0
-    ## LAPACK: /usr/lib/x86_64-linux-gnu/lapack/liblapack.so.3.9.0
+    ## BLAS:   /usr/lib/x86_64-linux-gnu/blas/libblas.so.3.7.1
+    ## LAPACK: /usr/lib/x86_64-linux-gnu/lapack/liblapack.so.3.7.1
     ## 
     ## locale:
     ##  [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              
@@ -6513,12 +6426,13 @@ sessionInfo()
     ## [8] base     
     ## 
     ## other attached packages:
-    ##  [1] showtext_0.9-4     showtextdb_3.0     sysfonts_0.8.5     car_3.0-11        
-    ##  [5] carData_3.0-4      kableExtra_1.3.4   modelsummary_0.9.1 estimatr_0.30.2   
-    ##  [9] patchwork_1.1.1    survey_4.1-1       survival_3.2-13    Matrix_1.3-4      
-    ## [13] countrycode_1.3.0  tmap_3.3-2         broom_0.7.9        forcats_0.5.1     
-    ## [17] stringr_1.4.0      dplyr_1.0.7        purrr_0.3.4        readr_2.0.1       
-    ## [21] tidyr_1.1.3        tibble_3.1.4       ggplot2_3.3.5      tidyverse_1.3.1   
+    ##  [1] showtext_0.9-4     showtextdb_3.0     sysfonts_0.8.5     sf_1.0-2          
+    ##  [5] fastDummies_1.6.3  car_3.0-11         carData_3.0-4      kableExtra_1.3.4  
+    ##  [9] modelsummary_0.9.1 estimatr_0.30.2    patchwork_1.1.1    survey_4.1-1      
+    ## [13] survival_3.2-11    Matrix_1.3-4       countrycode_1.3.0  tmap_3.3-2        
+    ## [17] broom_0.7.9        forcats_0.5.1      stringr_1.4.0      dplyr_1.0.7       
+    ## [21] purrr_0.3.4        readr_2.0.1        tidyr_1.1.3        tibble_3.1.4      
+    ## [25] ggplot2_3.3.5      tidyverse_1.3.1   
     ## 
     ## loaded via a namespace (and not attached):
     ##   [1] leafem_0.1.6       colorspace_2.0-2   ellipsis_0.3.2    
@@ -6536,24 +6450,23 @@ sessionInfo()
     ##  [37] wk_0.5.0           tables_0.9.6       Rcpp_1.0.7        
     ##  [40] cellranger_1.1.0   raster_3.4-13      vctrs_0.3.8       
     ##  [43] nlme_3.1-152       svglite_2.0.0      leafsync_0.1.0    
-    ##  [46] crosstalk_1.1.1    lwgeom_0.2-7       xfun_0.25         
+    ##  [46] crosstalk_1.1.1    lwgeom_0.2-7       xfun_0.26         
     ##  [49] openxlsx_4.2.4     rvest_1.0.1        lifecycle_1.0.0   
     ##  [52] XML_3.99-0.7       srvyr_1.0.1        scales_1.1.1      
-    ##  [55] vroom_1.5.4        hms_1.1.0          parallel_4.1.1    
+    ##  [55] vroom_1.5.5        hms_1.1.0          parallel_4.1.1    
     ##  [58] RColorBrewer_1.1-2 yaml_2.2.1         curl_4.3.2        
-    ##  [61] stringi_1.7.4      highr_0.9          fastDummies_1.6.3 
-    ##  [64] checkmate_2.0.0    e1071_1.7-8        zip_2.2.0         
-    ##  [67] repr_1.1.3         rlang_0.4.11       pkgconfig_2.0.3   
-    ##  [70] systemfonts_1.0.2  evaluate_0.14      lattice_0.20-44   
-    ##  [73] sf_1.0-2           labeling_0.4.2     htmlwidgets_1.5.4 
-    ##  [76] bit_4.0.4          tidyselect_1.1.1   here_1.0.1        
-    ##  [79] magrittr_2.0.1     R6_2.5.1           generics_0.1.0    
-    ##  [82] DBI_1.1.1          mgcv_1.8-36        pillar_1.6.2      
-    ##  [85] haven_2.4.3        foreign_0.8-81     withr_2.4.2       
-    ##  [88] units_0.7-2        stars_0.5-3        abind_1.4-5       
-    ##  [91] sp_1.4-5           modelr_0.1.8       crayon_1.4.1      
-    ##  [94] KernSmooth_2.23-20 utf8_1.2.2         tzdb_0.1.2        
-    ##  [97] rmarkdown_2.10     readxl_1.3.1       data.table_1.14.0 
-    ## [100] reprex_2.0.1       digest_0.6.27      classInt_0.4-3    
-    ## [103] webshot_0.5.2      munsell_0.5.0      viridisLite_0.4.0 
-    ## [106] skimr_2.1.3        mitools_2.4
+    ##  [61] stringi_1.7.4      highr_0.9          checkmate_2.0.0   
+    ##  [64] e1071_1.7-9        zip_2.2.0          repr_1.1.3        
+    ##  [67] rlang_0.4.11       pkgconfig_2.0.3    systemfonts_1.0.2 
+    ##  [70] evaluate_0.14      lattice_0.20-44    labeling_0.4.2    
+    ##  [73] htmlwidgets_1.5.4  bit_4.0.4          tidyselect_1.1.1  
+    ##  [76] here_1.0.1         magrittr_2.0.1     R6_2.5.1          
+    ##  [79] generics_0.1.0     DBI_1.1.1          mgcv_1.8-36       
+    ##  [82] pillar_1.6.2       haven_2.4.3        foreign_0.8-81    
+    ##  [85] withr_2.4.2        units_0.7-2        stars_0.5-3       
+    ##  [88] abind_1.4-5        sp_1.4-5           modelr_0.1.8      
+    ##  [91] crayon_1.4.1       KernSmooth_2.23-20 utf8_1.2.2        
+    ##  [94] tzdb_0.1.2         rmarkdown_2.11     readxl_1.3.1      
+    ##  [97] data.table_1.14.0  reprex_2.0.1       digest_0.6.27     
+    ## [100] classInt_0.4-3     webshot_0.5.2      munsell_0.5.0     
+    ## [103] viridisLite_0.4.0  skimr_2.1.3        mitools_2.4

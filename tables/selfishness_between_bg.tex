@@ -1,0 +1,27 @@
+\begin{table}
+
+\caption{\label{tab:unnamed-chunk-24}Country level associations}
+\centering
+\begin{tabular}[t]{lcccccc}
+\toprule
+\multicolumn{1}{c}{ } & \multicolumn{5}{c}{Separate} & \multicolumn{1}{c}{Joint} \\
+\cmidrule(l{3pt}r{3pt}){2-6} \cmidrule(l{3pt}r{3pt}){7-7}
+  & Model 1 & Model 2 & Model 3 & Model 4 & Model 5 & Model 6\\
+\midrule
+Corruption & \num{0.238}*** &  &  &  &  & \num{0.158}**\\
+ & (\num{0.039}) &  &  &  &  & (\num{0.068})\\
+GNI &  & \num{-0.205}*** &  &  &  & \num{-0.035}\\
+ &  & (\num{0.042}) &  &  &  & (\num{0.114})\\
+Inequality &  &  & \num{0.075} &  &  & \num{-0.003}\\
+ &  &  & (\num{0.049}) &  &  & (\num{0.044})\\
+Age &  &  &  & \num{-0.209}*** &  & \num{-0.060}\\
+ &  &  &  & (\num{0.042}) &  & (\num{0.097})\\
+Education &  &  &  &  & \num{-0.211}*** & \num{-0.022}\\
+ &  &  &  &  & (\num{0.043}) & (\num{0.081})\\
+\midrule
+Num.Obs. & \num{60} & \num{60} & \num{59} & \num{60} & \num{58} & \num{57}\\
+R2 & \num{0.387} & \num{0.287} & \num{0.039} & \num{0.298} & \num{0.301} & \num{0.426}\\
+\bottomrule
+\multicolumn{7}{l}{\rule{0pt}{1em}* p $<$ 0.1, ** p $<$ 0.05, *** p $<$ 0.01}\\
+\end{tabular}
+\end{table}

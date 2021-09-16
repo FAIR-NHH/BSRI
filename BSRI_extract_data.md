@@ -1,7 +1,7 @@
 Extracting World Poll data for replication file we can share
 ================
 Erik Ø. Sørensen
-15 september, 2021
+16 september, 2021
 
 # Data availability policy
 
@@ -79,11 +79,11 @@ sessionInfo()
 
     ## R version 4.1.1 (2021-08-10)
     ## Platform: x86_64-pc-linux-gnu (64-bit)
-    ## Running under: Ubuntu 20.04.3 LTS
+    ## Running under: Ubuntu 18.04.5 LTS
     ## 
     ## Matrix products: default
-    ## BLAS:   /usr/lib/x86_64-linux-gnu/blas/libblas.so.3.9.0
-    ## LAPACK: /usr/lib/x86_64-linux-gnu/lapack/liblapack.so.3.9.0
+    ## BLAS:   /usr/lib/x86_64-linux-gnu/blas/libblas.so.3.7.1
+    ## LAPACK: /usr/lib/x86_64-linux-gnu/lapack/liblapack.so.3.7.1
     ## 
     ## locale:
     ##  [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              
@@ -98,22 +98,21 @@ sessionInfo()
     ## 
     ## other attached packages:
     ##  [1] haven_2.4.3     forcats_0.5.1   stringr_1.4.0   dplyr_1.0.7    
-    ##  [5] purrr_0.3.4     readr_2.0.1     tidyr_1.1.3     tibble_3.1.4   
+    ##  [5] purrr_0.3.4     readr_2.0.1     tidyr_1.1.3     tibble_3.1.3   
     ##  [9] ggplot2_3.3.5   tidyverse_1.3.1
     ## 
     ## loaded via a namespace (and not attached):
-    ##  [1] tidyselect_1.1.1 xfun_0.25        colorspace_2.0-2 vctrs_0.3.8     
-    ##  [5] generics_0.1.0   htmltools_0.5.2  yaml_2.2.1       utf8_1.2.2      
-    ##  [9] rlang_0.4.11     pillar_1.6.2     glue_1.4.2       withr_2.4.2     
-    ## [13] DBI_1.1.1        bit64_4.0.5      dbplyr_2.1.1     modelr_0.1.8    
-    ## [17] readxl_1.3.1     lifecycle_1.0.0  munsell_0.5.0    gtable_0.3.0    
-    ## [21] cellranger_1.1.0 rvest_1.0.1      evaluate_0.14    knitr_1.34      
-    ## [25] tzdb_0.1.2       fastmap_1.1.0    parallel_4.1.1   fansi_0.5.0     
-    ## [29] broom_0.7.9      Rcpp_1.0.7       scales_1.1.1     backports_1.2.1 
-    ## [33] vroom_1.5.4      jsonlite_1.7.2   bit_4.0.4        fs_1.5.0        
-    ## [37] hms_1.1.0        digest_0.6.27    stringi_1.7.4    rprojroot_2.0.2 
-    ## [41] grid_4.1.1       here_1.0.1       cli_3.0.1        tools_4.1.1     
-    ## [45] magrittr_2.0.1   crayon_1.4.1     pkgconfig_2.0.3  ellipsis_0.3.2  
-    ## [49] xml2_1.3.2       reprex_2.0.1     lubridate_1.7.10 rstudioapi_0.13 
-    ## [53] assertthat_0.2.1 rmarkdown_2.10   httr_1.4.2       R6_2.5.1        
-    ## [57] compiler_4.1.1
+    ##  [1] tidyselect_1.1.1  xfun_0.25         colorspace_2.0-2  vctrs_0.3.8      
+    ##  [5] generics_0.1.0    htmltools_0.5.1.1 yaml_2.2.1        utf8_1.2.2       
+    ##  [9] rlang_0.4.11      pillar_1.6.2      glue_1.4.2        withr_2.4.2      
+    ## [13] DBI_1.1.1         bit64_4.0.5       dbplyr_2.1.1      modelr_0.1.8     
+    ## [17] readxl_1.3.1      lifecycle_1.0.0   munsell_0.5.0     gtable_0.3.0     
+    ## [21] cellranger_1.1.0  rvest_1.0.1       evaluate_0.14     knitr_1.33       
+    ## [25] tzdb_0.1.2        parallel_4.1.1    fansi_0.5.0       broom_0.7.9      
+    ## [29] Rcpp_1.0.7        scales_1.1.1      backports_1.2.1   vroom_1.5.4      
+    ## [33] jsonlite_1.7.2    bit_4.0.4         fs_1.5.0          hms_1.1.0        
+    ## [37] digest_0.6.27     stringi_1.7.3     rprojroot_2.0.2   grid_4.1.1       
+    ## [41] here_1.0.1        cli_3.0.1         tools_4.1.1       magrittr_2.0.1   
+    ## [45] crayon_1.4.1      pkgconfig_2.0.3   ellipsis_0.3.2    xml2_1.3.2       
+    ## [49] reprex_2.0.1      lubridate_1.7.10  assertthat_0.2.1  rmarkdown_2.10   
+    ## [53] httr_1.4.2        rstudioapi_0.13   R6_2.5.1          compiler_4.1.1
