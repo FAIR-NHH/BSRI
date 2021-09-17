@@ -715,32 +715,6 @@ car::linearHypothesis(lall, c("zCorruption = 0"))
 
 
 
-## Exploring mobility vs corruption (Table in Supporting Information)
-```{r}
-smobility <- df_selfishness_c %>% lm(zCorruption ~ zget_ahead, data=.)
-smobilitya <- df_selfishness_c %>% lm(zCorruption ~ zget_ahead + zLn_GNI   +
-                               zInequality + zMeanAge + zSchooling, data=.)
-
-scorruption <- df_selfishness_c %>% lm(zget_ahead ~  zCorruption, data=.)
-scorruptiona <- df_selfishness_c %>% lm(zget_ahead ~  zCorruption + zLn_GNI  + zSchooling +
-                               zInequality + zMeanAge , data=.)
-aggregate_namesR <- c("zget_ahead"="Mobility", 
-                     "zCorruption"="Corruption", 
-                     "zLn_GNI"="GNI", 
-                     "zInequality"="Inequality",  
-                     "zMeanAge"="Mean age", 
-                     "zSchooling"="Schooling" )
-msummary(list(smobility, smobilitya, scorruption, scorruptiona),
-         title="Country level associations", coef_map=aggregate_namesR,
-         gof_omit = "R2 Adj.|se_type|AIC|BIC|Log.Lik.|F", 
-         stars = c("*"=0.1, "**"=0.05, "***"=0.01)) %>%
-  add_header_above(c(" "=1, "Corruption "=2, "Mobility"=2))
-```
-
-
-
-
-
 
 # Within-country variation in beliefs
 

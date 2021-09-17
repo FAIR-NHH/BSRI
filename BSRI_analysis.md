@@ -36,8 +36,6 @@ Erik Ø. Sørensen
         Information)](#robustness-of-cross-country-analysis-table-in-supporting-information)
     -   [Exploring corruption and measures of crime (Table in Supporting
         Information)](#exploring-corruption-and-measures-of-crime-table-in-supporting-information)
-    -   [Exploring mobility vs corruption (Table in Supporting
-        Information)](#exploring-mobility-vs-corruption-table-in-supporting-information)
 -   [Within-country variation in
     beliefs](#within-country-variation-in-beliefs)
     -   [Polarization (subfigure)](#polarization-subfigure)
@@ -3215,292 +3213,6 @@ car::linearHypothesis(lall, c("zCorruption = 0"))
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
-## Exploring mobility vs corruption (Table in Supporting Information)
-
-``` r
-smobility <- df_selfishness_c %>% lm(zCorruption ~ zget_ahead, data=.)
-smobilitya <- df_selfishness_c %>% lm(zCorruption ~ zget_ahead + zLn_GNI   +
-                               zInequality + zMeanAge + zSchooling, data=.)
-
-scorruption <- df_selfishness_c %>% lm(zget_ahead ~  zCorruption, data=.)
-scorruptiona <- df_selfishness_c %>% lm(zget_ahead ~  zCorruption + zLn_GNI  + zSchooling +
-                               zInequality + zMeanAge , data=.)
-aggregate_namesR <- c("zget_ahead"="Mobility", 
-                     "zCorruption"="Corruption", 
-                     "zLn_GNI"="GNI", 
-                     "zInequality"="Inequality",  
-                     "zMeanAge"="Mean age", 
-                     "zSchooling"="Schooling" )
-msummary(list(smobility, smobilitya, scorruption, scorruptiona),
-         title="Country level associations", coef_map=aggregate_namesR,
-         gof_omit = "R2 Adj.|se_type|AIC|BIC|Log.Lik.|F", 
-         stars = c("*"=0.1, "**"=0.05, "***"=0.01)) %>%
-  add_header_above(c(" "=1, "Corruption "=2, "Mobility"=2))
-```
-
-<table style="NAborder-bottom: 0; width: auto !important; margin-left: auto; margin-right: auto;" class="table">
-<caption>
-Country level associations
-</caption>
-<thead>
-<tr>
-<th style="empty-cells: hide;border-bottom:hidden;" colspan="1">
-</th>
-<th style="border-bottom:hidden;padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="2">
-
-<div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">
-
-Corruption
-
-</div>
-
-</th>
-<th style="border-bottom:hidden;padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="2">
-
-<div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">
-
-Mobility
-
-</div>
-
-</th>
-</tr>
-<tr>
-<th style="text-align:left;">
-</th>
-<th style="text-align:center;">
-Model 1
-</th>
-<th style="text-align:center;">
-Model 2
-</th>
-<th style="text-align:center;">
-Model 3
-</th>
-<th style="text-align:center;">
-Model 4
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:left;">
-Mobility
-</td>
-<td style="text-align:center;">
-0.038
-</td>
-<td style="text-align:center;">
-−0.373\*\*\*
-</td>
-<td style="text-align:center;">
-</td>
-<td style="text-align:center;">
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-</td>
-<td style="text-align:center;">
-(0.131)
-</td>
-<td style="text-align:center;">
-(0.079)
-</td>
-<td style="text-align:center;">
-</td>
-<td style="text-align:center;">
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Corruption
-</td>
-<td style="text-align:center;">
-</td>
-<td style="text-align:center;">
-</td>
-<td style="text-align:center;">
-0.038
-</td>
-<td style="text-align:center;">
-−0.821\*\*\*
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-</td>
-<td style="text-align:center;">
-</td>
-<td style="text-align:center;">
-</td>
-<td style="text-align:center;">
-(0.131)
-</td>
-<td style="text-align:center;">
-(0.173)
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-GNI
-</td>
-<td style="text-align:center;">
-</td>
-<td style="text-align:center;">
-−0.567\*\*\*
-</td>
-<td style="text-align:center;">
-</td>
-<td style="text-align:center;">
-−0.241
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-</td>
-<td style="text-align:center;">
-</td>
-<td style="text-align:center;">
-(0.181)
-</td>
-<td style="text-align:center;">
-</td>
-<td style="text-align:center;">
-(0.291)
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Inequality
-</td>
-<td style="text-align:center;">
-</td>
-<td style="text-align:center;">
-0.091
-</td>
-<td style="text-align:center;">
-</td>
-<td style="text-align:center;">
-0.137
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-</td>
-<td style="text-align:center;">
-</td>
-<td style="text-align:center;">
-(0.076)
-</td>
-<td style="text-align:center;">
-</td>
-<td style="text-align:center;">
-(0.113)
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Mean age
-</td>
-<td style="text-align:center;">
-</td>
-<td style="text-align:center;">
-−0.361\*\*
-</td>
-<td style="text-align:center;">
-</td>
-<td style="text-align:center;">
-−0.652\*\*
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-</td>
-<td style="text-align:center;">
-</td>
-<td style="text-align:center;">
-(0.170)
-</td>
-<td style="text-align:center;">
-</td>
-<td style="text-align:center;">
-(0.246)
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Schooling
-</td>
-<td style="text-align:center;">
-</td>
-<td style="text-align:center;">
-−0.066
-</td>
-<td style="text-align:center;">
-</td>
-<td style="text-align:center;">
-−0.236
-</td>
-</tr>
-<tr>
-<td style="text-align:left;box-shadow: 0px 1px">
-</td>
-<td style="text-align:center;box-shadow: 0px 1px">
-</td>
-<td style="text-align:center;box-shadow: 0px 1px">
-(0.141)
-</td>
-<td style="text-align:center;box-shadow: 0px 1px">
-</td>
-<td style="text-align:center;box-shadow: 0px 1px">
-(0.207)
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Num.Obs.
-</td>
-<td style="text-align:center;">
-60
-</td>
-<td style="text-align:center;">
-57
-</td>
-<td style="text-align:center;">
-60
-</td>
-<td style="text-align:center;">
-57
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-R2
-</td>
-<td style="text-align:center;">
-0.001
-</td>
-<td style="text-align:center;">
-0.750
-</td>
-<td style="text-align:center;">
-0.001
-</td>
-<td style="text-align:center;">
-0.477
-</td>
-</tr>
-</tbody>
-<tfoot>
-<tr>
-<td style="padding: 0; " colspan="100%">
-<sup></sup> \* p &lt; 0.1, \*\* p &lt; 0.05, \*\*\* p &lt; 0.01
-</td>
-</tr>
-</tfoot>
-</table>
-
 # Within-country variation in beliefs
 
 ## Polarization (subfigure)
@@ -4418,7 +4130,7 @@ within_plot <- params_df %>%
 within_plot
 ```
 
-![](BSRI_analysis_files/figure-gfm/unnamed-chunk-56-1.png)<!-- -->
+![](BSRI_analysis_files/figure-gfm/unnamed-chunk-55-1.png)<!-- -->
 
 ## Combining within regression plot with polarization map (Figure in paper)
 
@@ -4431,7 +4143,7 @@ polarization_selfish_rich <- ggplot(data=polarization_map_joined) +
 polarization_selfish_rich
 ```
 
-![](BSRI_analysis_files/figure-gfm/unnamed-chunk-57-1.png)<!-- -->
+![](BSRI_analysis_files/figure-gfm/unnamed-chunk-56-1.png)<!-- -->
 
 Putting the graphs together with “patchwork”
 
@@ -4446,7 +4158,7 @@ within_display <- polarization_selfish_rich + within_plot +
 within_display
 ```
 
-![](BSRI_analysis_files/figure-gfm/unnamed-chunk-58-1.png)<!-- -->
+![](BSRI_analysis_files/figure-gfm/unnamed-chunk-57-1.png)<!-- -->
 
 ``` r
 ggsave(here::here("graphs","Figure-3.pdf"), width=17.8, height=14, units="cm")
@@ -4464,7 +4176,7 @@ pol_means <- polarization_estimates %>%
 pol_means
 ```
 
-![](BSRI_analysis_files/figure-gfm/unnamed-chunk-59-1.png)<!-- -->
+![](BSRI_analysis_files/figure-gfm/unnamed-chunk-58-1.png)<!-- -->
 
 ## Regressions country-specific coefficients (Figure in Supporting Information)
 
@@ -4515,7 +4227,7 @@ country_params %>% dplyr::select(iso_a3, term, estimate, std.error) %>%
                  hline=0, path=here::here("graphs","selfishness_incrank_coef_joint.pdf"))
 ```
 
-![](BSRI_analysis_files/figure-gfm/unnamed-chunk-62-1.png)<!-- -->
+![](BSRI_analysis_files/figure-gfm/unnamed-chunk-61-1.png)<!-- -->
 
 # Attitudes vs beliefs
 
@@ -5449,7 +5161,7 @@ att2_fig <- att2_params %>% dplyr::select(iso_a3, term, estimate, std.error) %>%
 att2_fig
 ```
 
-![](BSRI_analysis_files/figure-gfm/unnamed-chunk-69-1.png)<!-- -->
+![](BSRI_analysis_files/figure-gfm/unnamed-chunk-68-1.png)<!-- -->
 
 ``` r
 att5_fig <- att5_params %>% dplyr::select(iso_a3, term, estimate, std.error) %>%
@@ -5462,7 +5174,7 @@ att5_fig <- att5_params %>% dplyr::select(iso_a3, term, estimate, std.error) %>%
 att5_fig
 ```
 
-![](BSRI_analysis_files/figure-gfm/unnamed-chunk-70-1.png)<!-- -->
+![](BSRI_analysis_files/figure-gfm/unnamed-chunk-69-1.png)<!-- -->
 
 Combining these with patchwork:
 
@@ -5470,7 +5182,7 @@ Combining these with patchwork:
 att2_fig / att5_fig + plot_annotation(tag_levels = 'a')
 ```
 
-![](BSRI_analysis_files/figure-gfm/unnamed-chunk-71-1.png)<!-- -->
+![](BSRI_analysis_files/figure-gfm/unnamed-chunk-70-1.png)<!-- -->
 
 ``` r
 ggsave(here::here("graphs", "SR_attitude_coefs_combined.pdf"), width=16, height = 20, units="cm")
@@ -6246,7 +5958,7 @@ world_giving_c1
 
     ## Warning: Removed 1 rows containing missing values (geom_text).
 
-![](BSRI_analysis_files/figure-gfm/unnamed-chunk-78-1.png)<!-- -->
+![](BSRI_analysis_files/figure-gfm/unnamed-chunk-77-1.png)<!-- -->
 
 What does the regression line look like?
 
