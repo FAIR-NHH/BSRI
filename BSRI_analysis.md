@@ -3,7 +3,7 @@ by Ingvild Almås, Alexander W. Cappelen, Erik Ø. Sørensen and Bertil
 Tungodden
 ================
 Erik Ø. Sørensen
-15 september, 2021
+28 oktober, 2021
 
 -   [Summaries of SR support and missing
     variables](#summaries-of-sr-support-and-missing-variables)
@@ -242,6 +242,32 @@ averages_with_se
 
 ![](BSRI_analysis_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
 
+Also a variant that is easier to read on a large-scale print out.
+
+``` r
+Figure1c_tall <- estimates %>% ggplot2::ggplot(aes(y=reorder(country, -selfish_mean), 
+                                                   x=selfish_mean)) +
+  ggplot2::geom_vline(xintercept = 3, color = "grey") +
+  ggplot2::geom_point() + 
+  ggplot2::geom_errorbar(aes(xmin = selfish_mean - selfish_se,
+                             xmax = selfish_mean + selfish_se)) +
+  labs( x = "Mean \u00B1 s.e.",
+        y = ggplot2::element_blank(),
+        title = "Average Belief in Selfish Rich Inequality by country") +
+  ggplot2::theme_minimal() + 
+  theme(plot.title.position = "plot") +
+  ggplot2::theme( axis.text.y=element_text(size=10,
+                                           vjust=0.5,
+                                           hjust=1)) 
+  Figure1c_tall
+```
+
+![](BSRI_analysis_files/figure-gfm/unnamed-chunk-9-1.png)<!-- -->
+
+``` r
+ggsave(here::here("graphs","Figure1c_tall.pdf"), width = 16, height = 24, units = "cm")
+```
+
 ## A global map (subfigure)
 
 ``` r
@@ -257,7 +283,7 @@ dist_breaks15 <- c(1,2,3,4,5)
 E8
 ```
 
-![](BSRI_analysis_files/figure-gfm/unnamed-chunk-9-1.png)<!-- -->
+![](BSRI_analysis_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->
 
 ## Putting panels together (Figure in paper)
 
@@ -271,7 +297,7 @@ overview_display <- gl_hist + E8 + averages_with_se + plot_annotation(tag_levels
 overview_display
 ```
 
-![](BSRI_analysis_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->
+![](BSRI_analysis_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
 
 ``` r
 ggsave(here::here("graphs","Figure-1.pdf"), width=11.4, height=8, units="cm")
@@ -304,7 +330,7 @@ histograms1 <- country_bars %>% filter(country %in% countries1) %>%
 histograms1
 ```
 
-![](BSRI_analysis_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
+![](BSRI_analysis_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->
 
 ``` r
 ggsave(here::here("graphs","selfishness_histograms1.pdf"), width=24, height = 16, units="cm")
@@ -317,7 +343,7 @@ histograms2 <- country_bars %>% filter(country %in% countries2) %>%
 histograms2
 ```
 
-![](BSRI_analysis_files/figure-gfm/unnamed-chunk-11-2.png)<!-- -->
+![](BSRI_analysis_files/figure-gfm/unnamed-chunk-12-2.png)<!-- -->
 
 ``` r
 ggsave(here::here("graphs","selfishness_histograms2.pdf"), width=24, height = 16, units="cm")
@@ -589,7 +615,7 @@ country_param_plot <- params_to_plot %>%
 country_param_plot
 ```
 
-![](BSRI_analysis_files/figure-gfm/unnamed-chunk-21-1.png)<!-- -->
+![](BSRI_analysis_files/figure-gfm/unnamed-chunk-22-1.png)<!-- -->
 
 Statistical test provided in paper:
 
@@ -1064,7 +1090,7 @@ selfish_crime
 
     ## Warning: Removed 2 rows containing missing values (geom_point).
 
-![](BSRI_analysis_files/figure-gfm/unnamed-chunk-26-1.png)<!-- -->
+![](BSRI_analysis_files/figure-gfm/unnamed-chunk-27-1.png)<!-- -->
 
 The belief/crime regression for reference and the reported test:
 
@@ -1816,13 +1842,13 @@ histogram_disagree_conditional <- belief_classification %>%
 histogram_agree_conditional
 ```
 
-![](BSRI_analysis_files/figure-gfm/unnamed-chunk-29-1.png)<!-- -->
+![](BSRI_analysis_files/figure-gfm/unnamed-chunk-30-1.png)<!-- -->
 
 ``` r
 histogram_disagree_conditional
 ```
 
-![](BSRI_analysis_files/figure-gfm/unnamed-chunk-29-2.png)<!-- -->
+![](BSRI_analysis_files/figure-gfm/unnamed-chunk-30-2.png)<!-- -->
 
 ``` r
 histupper <- histogram_agree_conditional + labs(x=element_blank(), y = "Fraction", title="Share agreeing with crime important for inequality")
@@ -1831,7 +1857,7 @@ histlower <- histogram_disagree_conditional + labs(x=element_blank(), y = "Fract
 histupper / histlower  + plot_annotation(tag_levels = 'a', caption="Both panels: Among those who believe in Selfish Rich Inequality")
 ```
 
-![](BSRI_analysis_files/figure-gfm/unnamed-chunk-29-3.png)<!-- -->
+![](BSRI_analysis_files/figure-gfm/unnamed-chunk-30-3.png)<!-- -->
 
 ``` r
 ggsave(here::here("graphs","belief_classifications_histogram.pdf"), width = 16, height = 16, units = "cm")
@@ -1854,7 +1880,7 @@ crime_disagree_amongBSR_graph <- belief_classification %>%
 crime_agree_amongBSR_graph / crime_disagree_amongBSR_graph + plot_annotation(tag_levels = "a")
 ```
 
-![](BSRI_analysis_files/figure-gfm/unnamed-chunk-30-1.png)<!-- -->
+![](BSRI_analysis_files/figure-gfm/unnamed-chunk-31-1.png)<!-- -->
 
 ``` r
 ggsave(here::here("graphs","belief_classifications_ranked.pdf"), width=16, height = 16, units = "cm")
@@ -1916,7 +1942,7 @@ crime_mobility
 
     ## Warning: Removed 2 rows containing missing values (geom_point).
 
-![](BSRI_analysis_files/figure-gfm/unnamed-chunk-34-1.png)<!-- -->
+![](BSRI_analysis_files/figure-gfm/unnamed-chunk-35-1.png)<!-- -->
 
 And what does the regression line look like?
 
@@ -1982,7 +2008,7 @@ country_param_plot + selfish_crime + histogram_agree_conditional + crime_mobilit
 
     ## Warning: Removed 2 rows containing missing values (geom_point).
 
-![](BSRI_analysis_files/figure-gfm/unnamed-chunk-36-1.png)<!-- -->
+![](BSRI_analysis_files/figure-gfm/unnamed-chunk-37-1.png)<!-- -->
 
 ``` r
 ggsave(here::here("graphs", "Figure-2.pdf"),
@@ -4308,6 +4334,41 @@ Belief in Selfish Rich Inequality
                                         0.073
                                         </td>
                                         </tr>
+                                        <tr>
+                                        <td style="text-align:left;">
+                                        Std.Errors
+                                        </td>
+                                        <td style="text-align:center;">
+                                        by: psuid
+                                        </td>
+                                        <td style="text-align:center;">
+                                        by: psuid
+                                        </td>
+                                        <td style="text-align:center;">
+                                        by: psuid
+                                        </td>
+                                        <td style="text-align:center;">
+                                        by: psuid
+                                        </td>
+                                        <td style="text-align:center;">
+                                        by: psuid
+                                        </td>
+                                        <td style="text-align:center;">
+                                        by: psuid
+                                        </td>
+                                        <td style="text-align:center;">
+                                        by: psuid
+                                        </td>
+                                        <td style="text-align:center;">
+                                        by: psuid
+                                        </td>
+                                        <td style="text-align:center;">
+                                        by: psuid
+                                        </td>
+                                        <td style="text-align:center;">
+                                        by: psuid
+                                        </td>
+                                        </tr>
                                         </tbody>
                                         </table>
 
@@ -4466,7 +4527,7 @@ within_plot <- params_df %>%
 within_plot
 ```
 
-![](BSRI_analysis_files/figure-gfm/unnamed-chunk-56-1.png)<!-- -->
+![](BSRI_analysis_files/figure-gfm/unnamed-chunk-57-1.png)<!-- -->
 
 ## Combining within regression plot with polarization map (Figure in paper)
 
@@ -4479,7 +4540,7 @@ polarization_selfish_rich <- ggplot(data=polarization_map_joined) +
 polarization_selfish_rich
 ```
 
-![](BSRI_analysis_files/figure-gfm/unnamed-chunk-57-1.png)<!-- -->
+![](BSRI_analysis_files/figure-gfm/unnamed-chunk-58-1.png)<!-- -->
 
 Putting the graphs together with “patchwork”
 
@@ -4494,7 +4555,7 @@ within_display <- polarization_selfish_rich + within_plot +
 within_display
 ```
 
-![](BSRI_analysis_files/figure-gfm/unnamed-chunk-58-1.png)<!-- -->
+![](BSRI_analysis_files/figure-gfm/unnamed-chunk-59-1.png)<!-- -->
 
 ``` r
 ggsave(here::here("graphs","Figure-3.pdf"), width=11.4, height=12, units="cm")
@@ -4512,7 +4573,7 @@ pol_means <- polarization_estimates %>%
 pol_means
 ```
 
-![](BSRI_analysis_files/figure-gfm/unnamed-chunk-59-1.png)<!-- -->
+![](BSRI_analysis_files/figure-gfm/unnamed-chunk-60-1.png)<!-- -->
 
 ## Regressions country-specific coefficients (Figure in Supporting Information)
 
@@ -4563,7 +4624,7 @@ country_params %>% dplyr::select(iso_a3, term, estimate, std.error) %>%
                  hline=0, path=here::here("graphs","selfishness_incrank_coef_joint.pdf"))
 ```
 
-![](BSRI_analysis_files/figure-gfm/unnamed-chunk-62-1.png)<!-- -->
+![](BSRI_analysis_files/figure-gfm/unnamed-chunk-63-1.png)<!-- -->
 
 # Attitudes vs beliefs
 
@@ -5424,6 +5485,23 @@ R2
 0.108
 </td>
 </tr>
+<tr>
+<td style="text-align:left;">
+Std.Errors
+</td>
+<td style="text-align:center;">
+by: psuid
+</td>
+<td style="text-align:center;">
+by: psuid
+</td>
+<td style="text-align:center;">
+by: psuid
+</td>
+<td style="text-align:center;">
+by: psuid
+</td>
+</tr>
 </tbody>
 </table>
 
@@ -5546,7 +5624,7 @@ att2_fig <- att2_params %>% dplyr::select(iso_a3, term, estimate, std.error) %>%
 att2_fig
 ```
 
-![](BSRI_analysis_files/figure-gfm/unnamed-chunk-69-1.png)<!-- -->
+![](BSRI_analysis_files/figure-gfm/unnamed-chunk-70-1.png)<!-- -->
 
 ``` r
 att5_fig <- att5_params %>% dplyr::select(iso_a3, term, estimate, std.error) %>%
@@ -5559,7 +5637,7 @@ att5_fig <- att5_params %>% dplyr::select(iso_a3, term, estimate, std.error) %>%
 att5_fig
 ```
 
-![](BSRI_analysis_files/figure-gfm/unnamed-chunk-70-1.png)<!-- -->
+![](BSRI_analysis_files/figure-gfm/unnamed-chunk-71-1.png)<!-- -->
 
 Combining these with patchwork:
 
@@ -5567,7 +5645,7 @@ Combining these with patchwork:
 att2_fig / att5_fig + plot_annotation(tag_levels = 'a')
 ```
 
-![](BSRI_analysis_files/figure-gfm/unnamed-chunk-71-1.png)<!-- -->
+![](BSRI_analysis_files/figure-gfm/unnamed-chunk-72-1.png)<!-- -->
 
 ``` r
 ggsave(here::here("graphs", "SR_attitude_coefs_combined.pdf"), width=16, height = 20, units="cm")
@@ -6254,6 +6332,29 @@ R2
 0.108
 </td>
 </tr>
+<tr>
+<td style="text-align:left;">
+Std.Errors
+</td>
+<td style="text-align:center;">
+by: psuid
+</td>
+<td style="text-align:center;">
+by: psuid
+</td>
+<td style="text-align:center;">
+by: psuid
+</td>
+<td style="text-align:center;">
+by: psuid
+</td>
+<td style="text-align:center;">
+by: psuid
+</td>
+<td style="text-align:center;">
+by: psuid
+</td>
+</tr>
 </tbody>
 </table>
 
@@ -6333,7 +6434,7 @@ world_giving_c1
 
     ## Warning: Removed 1 rows containing missing values (geom_text).
 
-![](BSRI_analysis_files/figure-gfm/unnamed-chunk-78-1.png)<!-- -->
+![](BSRI_analysis_files/figure-gfm/unnamed-chunk-79-1.png)<!-- -->
 
 What does the regression line look like?
 
@@ -6514,11 +6615,11 @@ sessionInfo()
     ## 
     ## other attached packages:
     ##  [1] showtext_0.9-4     showtextdb_3.0     sysfonts_0.8.5     car_3.0-11        
-    ##  [5] carData_3.0-4      kableExtra_1.3.4   modelsummary_0.9.1 estimatr_0.30.2   
+    ##  [5] carData_3.0-4      kableExtra_1.3.4   modelsummary_0.9.2 estimatr_0.30.2   
     ##  [9] patchwork_1.1.1    survey_4.1-1       survival_3.2-13    Matrix_1.3-4      
     ## [13] countrycode_1.3.0  tmap_3.3-2         broom_0.7.9        forcats_0.5.1     
-    ## [17] stringr_1.4.0      dplyr_1.0.7        purrr_0.3.4        readr_2.0.1       
-    ## [21] tidyr_1.1.3        tibble_3.1.4       ggplot2_3.3.5      tidyverse_1.3.1   
+    ## [17] stringr_1.4.0      dplyr_1.0.7        purrr_0.3.4        readr_2.0.2       
+    ## [21] tidyr_1.1.4        tibble_3.1.5       ggplot2_3.3.5      tidyverse_1.3.1   
     ## 
     ## loaded via a namespace (and not attached):
     ##   [1] leafem_0.1.6       colorspace_2.0-2   ellipsis_0.3.2    
@@ -6526,34 +6627,34 @@ sessionInfo()
     ##   [7] leaflet_2.0.4.1    base64enc_0.1-3    fs_1.5.0          
     ##  [10] dichromat_2.0-0    rstudioapi_0.13    proxy_0.4-26      
     ##  [13] farver_2.1.0       bit64_4.0.5        fansi_0.5.0       
-    ##  [16] lubridate_1.7.10   xml2_1.3.2         codetools_0.2-18  
-    ##  [19] splines_4.1.1      knitr_1.34         Formula_1.2-4     
+    ##  [16] lubridate_1.8.0    xml2_1.3.2         codetools_0.2-18  
+    ##  [19] splines_4.1.1      knitr_1.36         Formula_1.2-4     
     ##  [22] jsonlite_1.7.2     tmaptools_3.1-1    dbplyr_2.1.1      
     ##  [25] png_0.1-7          compiler_4.1.1     httr_1.4.2        
     ##  [28] backports_1.2.1    assertthat_0.2.1   fastmap_1.1.0     
-    ##  [31] cli_3.0.1          s2_1.0.6           htmltools_0.5.2   
+    ##  [31] cli_3.0.1          s2_1.0.7           htmltools_0.5.2   
     ##  [34] tools_4.1.1        gtable_0.3.0       glue_1.4.2        
     ##  [37] wk_0.5.0           tables_0.9.6       Rcpp_1.0.7        
-    ##  [40] cellranger_1.1.0   raster_3.4-13      vctrs_0.3.8       
+    ##  [40] cellranger_1.1.0   raster_3.5-2       vctrs_0.3.8       
     ##  [43] nlme_3.1-152       svglite_2.0.0      leafsync_0.1.0    
-    ##  [46] crosstalk_1.1.1    lwgeom_0.2-7       xfun_0.25         
-    ##  [49] openxlsx_4.2.4     rvest_1.0.1        lifecycle_1.0.0   
-    ##  [52] XML_3.99-0.7       srvyr_1.0.1        scales_1.1.1      
-    ##  [55] vroom_1.5.4        hms_1.1.0          parallel_4.1.1    
-    ##  [58] RColorBrewer_1.1-2 yaml_2.2.1         curl_4.3.2        
-    ##  [61] stringi_1.7.4      highr_0.9          fastDummies_1.6.3 
-    ##  [64] checkmate_2.0.0    e1071_1.7-8        zip_2.2.0         
-    ##  [67] repr_1.1.3         rlang_0.4.11       pkgconfig_2.0.3   
-    ##  [70] systemfonts_1.0.2  evaluate_0.14      lattice_0.20-44   
-    ##  [73] sf_1.0-2           labeling_0.4.2     htmlwidgets_1.5.4 
-    ##  [76] bit_4.0.4          tidyselect_1.1.1   here_1.0.1        
-    ##  [79] magrittr_2.0.1     R6_2.5.1           generics_0.1.0    
-    ##  [82] DBI_1.1.1          mgcv_1.8-36        pillar_1.6.2      
-    ##  [85] haven_2.4.3        foreign_0.8-81     withr_2.4.2       
-    ##  [88] units_0.7-2        stars_0.5-3        abind_1.4-5       
-    ##  [91] sp_1.4-5           modelr_0.1.8       crayon_1.4.1      
-    ##  [94] KernSmooth_2.23-20 utf8_1.2.2         tzdb_0.1.2        
-    ##  [97] rmarkdown_2.10     readxl_1.3.1       data.table_1.14.0 
-    ## [100] reprex_2.0.1       digest_0.6.27      classInt_0.4-3    
-    ## [103] webshot_0.5.2      munsell_0.5.0      viridisLite_0.4.0 
-    ## [106] skimr_2.1.3        mitools_2.4
+    ##  [46] crosstalk_1.1.1    lwgeom_0.2-8       xfun_0.27         
+    ##  [49] openxlsx_4.2.4     rvest_1.0.2        lifecycle_1.0.1   
+    ##  [52] XML_3.99-0.8       terra_1.4-11       srvyr_1.1.0       
+    ##  [55] scales_1.1.1       vroom_1.5.5        hms_1.1.1         
+    ##  [58] parallel_4.1.1     RColorBrewer_1.1-2 yaml_2.2.1        
+    ##  [61] curl_4.3.2         stringi_1.7.5      highr_0.9         
+    ##  [64] fastDummies_1.6.3  checkmate_2.0.0    e1071_1.7-9       
+    ##  [67] zip_2.2.0          repr_1.1.3         rlang_0.4.12      
+    ##  [70] pkgconfig_2.0.3    systemfonts_1.0.3  evaluate_0.14     
+    ##  [73] lattice_0.20-45    sf_1.0-3           labeling_0.4.2    
+    ##  [76] htmlwidgets_1.5.4  bit_4.0.4          tidyselect_1.1.1  
+    ##  [79] here_1.0.1         magrittr_2.0.1     R6_2.5.1          
+    ##  [82] generics_0.1.1     DBI_1.1.1          mgcv_1.8-38       
+    ##  [85] pillar_1.6.4       haven_2.4.3        foreign_0.8-81    
+    ##  [88] withr_2.4.2        units_0.7-2        stars_0.5-3       
+    ##  [91] abind_1.4-5        sp_1.4-5           modelr_0.1.8      
+    ##  [94] crayon_1.4.1       KernSmooth_2.23-20 utf8_1.2.2        
+    ##  [97] tzdb_0.1.2         rmarkdown_2.11     readxl_1.3.1      
+    ## [100] data.table_1.14.2  reprex_2.0.1       digest_0.6.28     
+    ## [103] classInt_0.4-3     webshot_0.5.2      munsell_0.5.0     
+    ## [106] viridisLite_0.4.0  skimr_2.1.3        mitools_2.4

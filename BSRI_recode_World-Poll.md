@@ -1,7 +1,7 @@
 Recoding Gallup World Poll data for ‘Belief in Selfish Rich Inequality’
 ================
 Erik Ø. Sørensen
-15 september, 2021
+27 oktober, 2021
 
 This documents the recoding of World Poll data into the analytical
 dataset for **Global evidence on the selfish rich hypothesis**, and
@@ -66,7 +66,7 @@ WP <- WP %>% group_by(WP5, psu) %>%
     ## Warning: `group_indices()` was deprecated in dplyr 1.0.0.
     ## Please use `cur_group_id()` instead.
     ## This warning is displayed once every 8 hours.
-    ## Call `lifecycle::last_warnings()` to see where this warning was generated.
+    ## Call `lifecycle::last_lifecycle_warnings()` to see where this warning was generated.
 
 # Belief and attitude questions
 
@@ -387,34 +387,34 @@ sessionInfo()
     ## other attached packages:
     ##  [1] reldist_1.6-6     readxl_1.3.1      countrycode_1.3.0 labelled_2.8.0   
     ##  [5] haven_2.4.3       forcats_0.5.1     stringr_1.4.0     dplyr_1.0.7      
-    ##  [9] purrr_0.3.4       readr_2.0.1       tidyr_1.1.3       tibble_3.1.4     
+    ##  [9] purrr_0.3.4       readr_2.0.2       tidyr_1.1.4       tibble_3.1.5     
     ## [13] ggplot2_3.3.5     tidyverse_1.3.1  
     ## 
     ## loaded via a namespace (and not attached):
     ##  [1] nlme_3.1-152        fs_1.5.0            bit64_4.0.5        
-    ##  [4] lubridate_1.7.10    RColorBrewer_1.1-2  httr_1.4.2         
+    ##  [4] lubridate_1.8.0     RColorBrewer_1.1-2  httr_1.4.2         
     ##  [7] rprojroot_2.0.2     tools_4.1.1         backports_1.2.1    
     ## [10] utf8_1.2.2          R6_2.5.1            rpart_4.1-15       
-    ## [13] Hmisc_4.5-0         DBI_1.1.1           mgcv_1.8-36        
+    ## [13] Hmisc_4.6-0         DBI_1.1.1           mgcv_1.8-38        
     ## [16] colorspace_2.0-2    nnet_7.3-16         withr_2.4.2        
     ## [19] tidyselect_1.1.1    gridExtra_2.3       bit_4.0.4          
-    ## [22] compiler_4.1.1      cli_3.0.1           rvest_1.0.1        
-    ## [25] htmlTable_2.2.1     xml2_1.3.2          scales_1.1.1       
-    ## [28] checkmate_2.0.0     digest_0.6.27       foreign_0.8-81     
-    ## [31] rmarkdown_2.10      base64enc_0.1-3     jpeg_0.1-9         
+    ## [22] compiler_4.1.1      cli_3.0.1           rvest_1.0.2        
+    ## [25] htmlTable_2.3.0     xml2_1.3.2          scales_1.1.1       
+    ## [28] checkmate_2.0.0     digest_0.6.28       foreign_0.8-81     
+    ## [31] rmarkdown_2.11      base64enc_0.1-3     jpeg_0.1-9         
     ## [34] pkgconfig_2.0.3     htmltools_0.5.2     highr_0.9          
     ## [37] dbplyr_2.1.1        fastmap_1.1.0       htmlwidgets_1.5.4  
-    ## [40] rlang_0.4.11        rstudioapi_0.13     generics_0.1.0     
-    ## [43] jsonlite_1.7.2      vroom_1.5.4         magrittr_2.0.1     
+    ## [40] rlang_0.4.12        rstudioapi_0.13     generics_0.1.1     
+    ## [43] jsonlite_1.7.2      vroom_1.5.5         magrittr_2.0.1     
     ## [46] Formula_1.2-4       Matrix_1.3-4        Rcpp_1.0.7         
-    ## [49] munsell_0.5.0       fansi_0.5.0         lifecycle_1.0.0    
-    ## [52] stringi_1.7.4       yaml_2.2.1          grid_4.1.1         
-    ## [55] parallel_4.1.1      crayon_1.4.1        lattice_0.20-44    
-    ## [58] splines_4.1.1       hms_1.1.0           knitr_1.34         
-    ## [61] pillar_1.6.2        reprex_2.0.1        glue_1.4.2         
-    ## [64] evaluate_0.14       latticeExtra_0.6-29 data.table_1.14.0  
+    ## [49] munsell_0.5.0       fansi_0.5.0         lifecycle_1.0.1    
+    ## [52] stringi_1.7.5       yaml_2.2.1          grid_4.1.1         
+    ## [55] parallel_4.1.1      crayon_1.4.1        lattice_0.20-45    
+    ## [58] splines_4.1.1       hms_1.1.1           knitr_1.36         
+    ## [61] pillar_1.6.4        reprex_2.0.1        glue_1.4.2         
+    ## [64] evaluate_0.14       latticeExtra_0.6-29 data.table_1.14.2  
     ## [67] modelr_0.1.8        png_0.1-7           vctrs_0.3.8        
     ## [70] tzdb_0.1.2          cellranger_1.1.0    gtable_0.3.0       
-    ## [73] assertthat_0.2.1    xfun_0.25           broom_0.7.9        
+    ## [73] assertthat_0.2.1    xfun_0.27           broom_0.7.9        
     ## [76] survival_3.2-13     cluster_2.1.2       ellipsis_0.3.2     
     ## [79] here_1.0.1

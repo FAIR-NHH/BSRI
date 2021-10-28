@@ -142,6 +142,26 @@ averages_with_se <- estimates %>%
 averages_with_se
 ```
 
+Also a variant that is easier to read on a large-scale print out.
+
+```{r}
+Figure1c_tall <- estimates %>% ggplot2::ggplot(aes(y=reorder(country, -selfish_mean), 
+                                                   x=selfish_mean)) +
+  ggplot2::geom_vline(xintercept = 3, color = "grey") +
+  ggplot2::geom_point() + 
+  ggplot2::geom_errorbar(aes(xmin = selfish_mean - selfish_se,
+                             xmax = selfish_mean + selfish_se)) +
+  labs( x = "Mean \u00B1 s.e.",
+        y = ggplot2::element_blank(),
+        title = "Average Belief in Selfish Rich Inequality by country") +
+  ggplot2::theme_minimal() + 
+  theme(plot.title.position = "plot") +
+  ggplot2::theme( axis.text.y=element_text(size=10,
+                                           vjust=0.5,
+                                           hjust=1)) 
+  Figure1c_tall
+ggsave(here::here("graphs","Figure1c_tall.pdf"), width = 16, height = 24, units = "cm")
+```
 
 
 ## A global map (subfigure)
