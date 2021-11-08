@@ -1425,6 +1425,84 @@ In most of the samples reported on by Durante2017, the rich are believed to
 be "colder" than the poor (in 30 out of 39 samples with beliefs about groups that can readily 
 be classified as referencing the rich and the poor---representing 32 countries).
 
+# The population weights
+
+Average age with and without weighting.
+```{r}
+g_age <- WPs %>% group_by(iso_a3) %>%
+  summarize(age_nonweighted = mean(age, na.rm=TRUE),
+            age_weighted = weighted.mean(age, wgt, na.rm=TRUE)) %>%
+  ggplot(aes(x=age_nonweighted, y=age_weighted, label=iso_a3)) +
+  geom_point() + geom_text(nudge_x = 1, nudge_y = 0.6, alpha=0.5) + 
+  theme_minimal() + labs(x="Non-weighted mean age",
+                         y="Weighted mean age",
+                         title="Age") +
+  coord_cartesian(xlim=c(30,63), ylim = c(30, 63))
+g_age
+```
+
+Share males with and without weighting.
+```{r}
+g_male <- WPs %>% group_by(iso_a3) %>%
+  summarize(male_nonweighted = mean(as.numeric(d_male), na.rm=TRUE),
+            male_weighted = weighted.mean(as.numeric(d_male), wgt, na.rm=TRUE)) %>%
+  ggplot(aes(x=male_nonweighted, y=male_weighted, label=iso_a3)) +
+  geom_point() + 
+  geom_text(nudge_x = 0.01, nudge_y = 0.002, alpha=0.5) + 
+  theme_minimal() + labs(x="Non-weighted share male",
+                         y="Weighted share male",
+                         title="Gender") +
+  coord_cartesian(xlim=c(0.35,0.65), ylim = c(0.35, 0.65))
+g_male
+```
+
+What are the raw and weighted ranges of the share of males?
+```{r}
+g_male_df <- WPs %>% group_by(iso_a3) %>%
+  summarize(male_nonweighted = mean(as.numeric(d_male), na.rm=TRUE),
+            male_weighted = weighted.mean(as.numeric(d_male), wgt, na.rm=TRUE)) 
+range(g_male_df$male_nonweighted)
+range(g_male_df$male_weighted)
+```
+
+
+
+
+Share urban with and without weighting.
+```{r}
+g_urban <- WPs %>% group_by(iso_a3) %>%
+  summarize(urban_nonweighted = mean(as.numeric(d_urban), na.rm=TRUE),
+            urban_weighted = weighted.mean(as.numeric(d_urban), wgt, na.rm=TRUE)) %>%
+  ggplot(aes(x=urban_nonweighted, y=urban_weighted, label=iso_a3)) +
+  geom_point() + 
+  geom_text(nudge_x = 0.03, nudge_y = 0.02, alpha=0.5) + 
+  theme_minimal() + labs(x="Non-weighted share urban",
+                         y="Weighted share urban",
+                         title="Urban")  +
+  coord_cartesian(xlim=c(0.2,1), ylim = c(0.2, 1))
+g_urban
+```
+
+```{r}
+g_highedu <- WPs %>% group_by(iso_a3) %>%
+  summarize(highedu_nonweighted = mean(as.numeric(d_highedu), na.rm=TRUE),
+            highedu_weighted = weighted.mean(as.numeric(d_highedu), wgt, na.rm=TRUE)) %>%
+  ggplot(aes(x=highedu_nonweighted, y=highedu_weighted, label=iso_a3)) +
+  geom_point() + 
+  geom_text(nudge_x = 0.02, nudge_y = 0.01, alpha=0.5) + 
+  theme_minimal() + labs(x="Non-weighted share higher education",
+                         y="Weighted share higher education",
+                         title="Higher education") +
+  coord_cartesian(xlim=c(0.0,0.5), ylim = c(0.0, 0.5))
+g_highedu
+```
+
+## Putting graphs together
+
+```{r}
+g_age + g_male + g_urban + g_highedu + plot_annotation(tag_levels = "a")
+ggsave(here::here("graphs","effect_of_weighting.pdf"), width = 24, height =16, units = "cm")
+```
 
 
 # Session Info

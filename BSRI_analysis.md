@@ -3,7 +3,7 @@ by Ingvild Almås, Alexander W. Cappelen, Erik Ø. Sørensen and Bertil
 Tungodden
 ================
 Erik Ø. Sørensen
-28 oktober, 2021
+08 november, 2021
 
 -   [Summaries of SR support and missing
     variables](#summaries-of-sr-support-and-missing-variables)
@@ -56,6 +56,8 @@ Erik Ø. Sørensen
 -   [Are the richer more selfish? (Figure for Supporting
     Information)](#are-the-richer-more-selfish-figure-for-supporting-information)
 -   [Relation to Durante et al (2017).](#relation-to-durante-et-al-2017)
+-   [The population weights](#the-population-weights)
+    -   [Putting graphs together](#putting-graphs-together)
 -   [Session Info](#session-info)
 
 Loading World Poll data:
@@ -507,10 +509,10 @@ df_selfishness_c %>% dplyr::select(zCorruption, zshadow_ec, zorg_crime) %>%
 zCorruption
 </th>
 <th style="text-align:right;">
-zshadow\_ec
+zshadow_ec
 </th>
 <th style="text-align:right;">
-zorg\_crime
+zorg_crime
 </th>
 </tr>
 </thead>
@@ -531,7 +533,7 @@ zCorruption
 </tr>
 <tr>
 <td style="text-align:left;">
-zshadow\_ec
+zshadow_ec
 </td>
 <td style="text-align:right;">
 0.774
@@ -545,7 +547,7 @@ zshadow\_ec
 </tr>
 <tr>
 <td style="text-align:left;">
-zorg\_crime
+zorg_crime
 </td>
 <td style="text-align:right;">
 0.662
@@ -958,7 +960,7 @@ R2
 <tfoot>
 <tr>
 <td style="padding: 0; " colspan="100%">
-<sup></sup> \* p &lt; 0.1, \*\* p &lt; 0.05, \*\*\* p &lt; 0.01
+<sup></sup> \* p \< 0.1, \*\* p \< 0.05, \*\*\* p \< 0.01
 </td>
 </tr>
 </tfoot>
@@ -1227,13 +1229,13 @@ None
 <thead>
 <tr>
 <th style="text-align:left;">
-skim\_variable
+skim_variable
 </th>
 <th style="text-align:right;">
-n\_missing
+n_missing
 </th>
 <th style="text-align:right;">
-complete\_rate
+complete_rate
 </th>
 <th style="text-align:right;">
 min
@@ -1245,7 +1247,7 @@ max
 empty
 </th>
 <th style="text-align:right;">
-n\_unique
+n_unique
 </th>
 <th style="text-align:right;">
 whitespace
@@ -1255,7 +1257,7 @@ whitespace
 <tbody>
 <tr>
 <td style="text-align:left;">
-iso\_a3
+iso_a3
 </td>
 <td style="text-align:right;">
 0
@@ -1314,13 +1316,13 @@ country
 <thead>
 <tr>
 <th style="text-align:left;">
-skim\_variable
+skim_variable
 </th>
 <th style="text-align:right;">
-n\_missing
+n_missing
 </th>
 <th style="text-align:right;">
-complete\_rate
+complete_rate
 </th>
 <th style="text-align:right;">
 mean
@@ -1351,7 +1353,7 @@ hist
 <tbody>
 <tr>
 <td style="text-align:left;">
-agree\_crime\_amongBSR
+agree_crime_amongBSR
 </td>
 <td style="text-align:right;">
 0
@@ -1386,7 +1388,7 @@ agree\_crime\_amongBSR
 </tr>
 <tr>
 <td style="text-align:left;">
-agree\_crime\_amongBSR\_se
+agree_crime_amongBSR_se
 </td>
 <td style="text-align:right;">
 0
@@ -1421,7 +1423,7 @@ agree\_crime\_amongBSR\_se
 </tr>
 <tr>
 <td style="text-align:left;">
-disagree\_crime\_amongBSR
+disagree_crime_amongBSR
 </td>
 <td style="text-align:right;">
 0
@@ -1456,7 +1458,7 @@ disagree\_crime\_amongBSR
 </tr>
 <tr>
 <td style="text-align:left;">
-disagree\_crime\_amongBSR\_se
+disagree_crime_amongBSR_se
 </td>
 <td style="text-align:right;">
 0
@@ -1491,7 +1493,7 @@ disagree\_crime\_amongBSR\_se
 </tr>
 <tr>
 <td style="text-align:left;">
-agree\_crime\_and\_BSR
+agree_crime_and_BSR
 </td>
 <td style="text-align:right;">
 0
@@ -1526,7 +1528,7 @@ agree\_crime\_and\_BSR
 </tr>
 <tr>
 <td style="text-align:left;">
-agree\_crime\_and\_BSR\_se
+agree_crime_and_BSR_se
 </td>
 <td style="text-align:right;">
 0
@@ -1561,7 +1563,7 @@ agree\_crime\_and\_BSR\_se
 </tr>
 <tr>
 <td style="text-align:left;">
-disagree\_crime\_and\_BSR
+disagree_crime_and_BSR
 </td>
 <td style="text-align:right;">
 0
@@ -1596,7 +1598,7 @@ disagree\_crime\_and\_BSR
 </tr>
 <tr>
 <td style="text-align:left;">
-disagree\_crime\_and\_BSR\_se
+disagree_crime_and_BSR_se
 </td>
 <td style="text-align:right;">
 0
@@ -1631,7 +1633,7 @@ disagree\_crime\_and\_BSR\_se
 </tr>
 <tr>
 <td style="text-align:left;">
-agree\_BSR
+agree_BSR
 </td>
 <td style="text-align:right;">
 0
@@ -1666,7 +1668,7 @@ agree\_BSR
 </tr>
 <tr>
 <td style="text-align:left;">
-agree\_BSR\_se
+agree_BSR_se
 </td>
 <td style="text-align:right;">
 0
@@ -1701,7 +1703,7 @@ agree\_BSR\_se
 </tr>
 <tr>
 <td style="text-align:left;">
-agree\_crime
+agree_crime
 </td>
 <td style="text-align:right;">
 0
@@ -1736,7 +1738,7 @@ agree\_crime
 </tr>
 <tr>
 <td style="text-align:left;">
-agree\_crime\_se
+agree_crime_se
 </td>
 <td style="text-align:right;">
 0
@@ -2492,8 +2494,8 @@ Belief in Selfish Rich Inequality
                                 <tfoot>
                                 <tr>
                                 <td style="padding: 0; " colspan="100%">
-                                <sup></sup> \* p &lt; 0.1, \*\* p &lt;
-                                0.05, \*\*\* p &lt; 0.01
+                                <sup></sup> \* p \< 0.1, \*\* p \< 0.05,
+                                \*\*\* p \< 0.01
                                 </td>
                                 </tr>
                                 </tfoot>
@@ -2827,8 +2829,8 @@ Government corruption
                         <tfoot>
                         <tr>
                         <td style="padding: 0; " colspan="100%">
-                        <sup></sup> \* p &lt; 0.1, \*\* p &lt; 0.05,
-                        \*\*\* p &lt; 0.01
+                        <sup></sup> \* p \< 0.1, \*\* p \< 0.05, \*\*\*
+                        p \< 0.01
                         </td>
                         </tr>
                         </tfoot>
@@ -3139,8 +3141,8 @@ Belief in Selfish Rich Inequality
                     <tfoot>
                     <tr>
                     <td style="padding: 0; " colspan="100%">
-                    <sup></sup> \* p &lt; 0.1, \*\* p &lt; 0.05, \*\*\*
-                    p &lt; 0.01
+                    <sup></sup> \* p \< 0.1, \*\* p \< 0.05, \*\*\* p \<
+                    0.01
                     </td>
                     </tr>
                     </tfoot>
@@ -3269,7 +3271,7 @@ of the estimated variance. But we need to also correct the standard
 error to fit the standard deviations.
 
 The Delta rule says that in general, we can approximate
-*v**a**r*(*f*(*s*)) = \|*f*′(*s*)\|<sup>2</sup> ⋅ *v**a**r*(*s*).
+var(*f*(*s*)) = \|*f*′(*s*)\|<sup>2</sup> ⋅ var(*s*).
 To find the variance of the estimated variance, we square the estimated
 standard error of the variance. With $f(s)=\\sqrt{s}$, and
 $f'(s) = 1/2\\sqrt{s}$, we can now use the estimated variance and the
@@ -4027,8 +4029,8 @@ Belief in Selfish Rich Inequality
                                         <tfoot>
                                         <tr>
                                         <td style="padding: 0; " colspan="100%">
-                                        <sup></sup> \* p &lt; 0.1, \*\*
-                                        p &lt; 0.05, \*\*\* p &lt; 0.01
+                                        <sup></sup> \* p \< 0.1, \*\* p
+                                        \< 0.05, \*\*\* p \< 0.01
                                         </td>
                                         </tr>
                                         </tfoot>
@@ -4638,8 +4640,8 @@ Should reduce inequality
                 <tfoot>
                 <tr>
                 <td style="padding: 0; " colspan="100%">
-                <sup></sup> \* p &lt; 0.1, \*\* p &lt; 0.05, \*\*\* p
-                &lt; 0.01
+                <sup></sup> \* p \< 0.1, \*\* p \< 0.05, \*\*\* p \<
+                0.01
                 </td>
                 </tr>
                 </tfoot>
@@ -5113,7 +5115,7 @@ by: psuid
 <tfoot>
 <tr>
 <td style="padding: 0; " colspan="100%">
-<sup></sup> \* p &lt; 0.1, \*\* p &lt; 0.05, \*\*\* p &lt; 0.01
+<sup></sup> \* p \< 0.1, \*\* p \< 0.05, \*\*\* p \< 0.01
 </td>
 </tr>
 </tfoot>
@@ -5725,7 +5727,7 @@ Married (d)
 </tr>
 <tr>
 <td style="text-align:left;">
-\# children (Z-score)
+# children (Z-score)
 </td>
 <td style="text-align:center;">
 0.012
@@ -5976,7 +5978,7 @@ by: psuid
 <tfoot>
 <tr>
 <td style="padding: 0; " colspan="100%">
-<sup></sup> \* p &lt; 0.1, \*\* p &lt; 0.05, \*\*\* p &lt; 0.01
+<sup></sup> \* p \< 0.1, \*\* p \< 0.05, \*\*\* p \< 0.01
 </td>
 </tr>
 </tfoot>
@@ -6212,13 +6214,113 @@ to be “colder” than the poor (in 30 out of 39 samples with beliefs about
 groups that can readily be classified as referencing the rich and the
 poor—representing 32 countries).
 
+# The population weights
+
+Average age with and without weighting.
+
+``` r
+g_age <- WPs %>% group_by(iso_a3) %>%
+  summarize(age_nonweighted = mean(age, na.rm=TRUE),
+            age_weighted = weighted.mean(age, wgt, na.rm=TRUE)) %>%
+  ggplot(aes(x=age_nonweighted, y=age_weighted, label=iso_a3)) +
+  geom_point() + geom_text(nudge_x = 1, nudge_y = 0.6, alpha=0.5) + 
+  theme_minimal() + labs(x="Non-weighted mean age",
+                         y="Weighted mean age",
+                         title="Age") +
+  coord_cartesian(xlim=c(30,63), ylim = c(30, 63))
+g_age
+```
+
+![](BSRI_analysis_files/figure-gfm/unnamed-chunk-83-1.png)<!-- -->
+
+Share males with and without weighting.
+
+``` r
+g_male <- WPs %>% group_by(iso_a3) %>%
+  summarize(male_nonweighted = mean(as.numeric(d_male), na.rm=TRUE),
+            male_weighted = weighted.mean(as.numeric(d_male), wgt, na.rm=TRUE)) %>%
+  ggplot(aes(x=male_nonweighted, y=male_weighted, label=iso_a3)) +
+  geom_point() + 
+  geom_text(nudge_x = 0.01, nudge_y = 0.002, alpha=0.5) + 
+  theme_minimal() + labs(x="Non-weighted share male",
+                         y="Weighted share male",
+                         title="Gender") +
+  coord_cartesian(xlim=c(0.35,0.65), ylim = c(0.35, 0.65))
+g_male
+```
+
+![](BSRI_analysis_files/figure-gfm/unnamed-chunk-84-1.png)<!-- -->
+
+What are the raw and weighted ranges of the share of males?
+
+``` r
+g_male_df <- WPs %>% group_by(iso_a3) %>%
+  summarize(male_nonweighted = mean(as.numeric(d_male), na.rm=TRUE),
+            male_weighted = weighted.mean(as.numeric(d_male), wgt, na.rm=TRUE)) 
+range(g_male_df$male_nonweighted)
+```
+
+    ## [1] 0.3396603 0.6130000
+
+``` r
+range(g_male_df$male_weighted)
+```
+
+    ## [1] 0.4415403 0.5292288
+
+Share urban with and without weighting.
+
+``` r
+g_urban <- WPs %>% group_by(iso_a3) %>%
+  summarize(urban_nonweighted = mean(as.numeric(d_urban), na.rm=TRUE),
+            urban_weighted = weighted.mean(as.numeric(d_urban), wgt, na.rm=TRUE)) %>%
+  ggplot(aes(x=urban_nonweighted, y=urban_weighted, label=iso_a3)) +
+  geom_point() + 
+  geom_text(nudge_x = 0.03, nudge_y = 0.02, alpha=0.5) + 
+  theme_minimal() + labs(x="Non-weighted share urban",
+                         y="Weighted share urban",
+                         title="Urban")  +
+  coord_cartesian(xlim=c(0.2,1), ylim = c(0.2, 1))
+g_urban
+```
+
+![](BSRI_analysis_files/figure-gfm/unnamed-chunk-86-1.png)<!-- -->
+
+``` r
+g_highedu <- WPs %>% group_by(iso_a3) %>%
+  summarize(highedu_nonweighted = mean(as.numeric(d_highedu), na.rm=TRUE),
+            highedu_weighted = weighted.mean(as.numeric(d_highedu), wgt, na.rm=TRUE)) %>%
+  ggplot(aes(x=highedu_nonweighted, y=highedu_weighted, label=iso_a3)) +
+  geom_point() + 
+  geom_text(nudge_x = 0.02, nudge_y = 0.01, alpha=0.5) + 
+  theme_minimal() + labs(x="Non-weighted share higher education",
+                         y="Weighted share higher education",
+                         title="Higher education") +
+  coord_cartesian(xlim=c(0.0,0.5), ylim = c(0.0, 0.5))
+g_highedu
+```
+
+![](BSRI_analysis_files/figure-gfm/unnamed-chunk-87-1.png)<!-- -->
+
+## Putting graphs together
+
+``` r
+g_age + g_male + g_urban + g_highedu + plot_annotation(tag_levels = "a")
+```
+
+![](BSRI_analysis_files/figure-gfm/unnamed-chunk-88-1.png)<!-- -->
+
+``` r
+ggsave(here::here("graphs","effect_of_weighting.pdf"), width = 24, height =16, units = "cm")
+```
+
 # Session Info
 
 ``` r
 sessionInfo()
 ```
 
-    ## R version 4.1.1 (2021-08-10)
+    ## R version 4.1.2 (2021-11-01)
     ## Platform: x86_64-pc-linux-gnu (64-bit)
     ## Running under: Ubuntu 20.04.3 LTS
     ## 
@@ -6240,47 +6342,45 @@ sessionInfo()
     ## 
     ## other attached packages:
     ##  [1] showtext_0.9-4     showtextdb_3.0     sysfonts_0.8.5     sf_1.0-3          
-    ##  [5] fastDummies_1.6.3  car_3.0-11         carData_3.0-4      kableExtra_1.3.4  
-    ##  [9] modelsummary_0.9.2 estimatr_0.30.2    patchwork_1.1.1    survey_4.1-1      
+    ##  [5] fastDummies_1.6.3  car_3.0-12         carData_3.0-4      kableExtra_1.3.4  
+    ##  [9] modelsummary_0.9.4 estimatr_0.30.2    patchwork_1.1.1    survey_4.1-1      
     ## [13] survival_3.2-13    Matrix_1.3-4       countrycode_1.3.0  tmap_3.3-2        
-    ## [17] broom_0.7.9        forcats_0.5.1      stringr_1.4.0      dplyr_1.0.7       
+    ## [17] broom_0.7.10       forcats_0.5.1      stringr_1.4.0      dplyr_1.0.7       
     ## [21] purrr_0.3.4        readr_2.0.2        tidyr_1.1.4        tibble_3.1.5      
     ## [25] ggplot2_3.3.5      tidyverse_1.3.1   
     ## 
     ## loaded via a namespace (and not attached):
     ##   [1] leafem_0.1.6       colorspace_2.0-2   ellipsis_0.3.2    
-    ##   [4] class_7.3-19       rio_0.5.27         rprojroot_2.0.2   
-    ##   [7] leaflet_2.0.4.1    base64enc_0.1-3    fs_1.5.0          
-    ##  [10] dichromat_2.0-0    rstudioapi_0.13    proxy_0.4-26      
-    ##  [13] farver_2.1.0       bit64_4.0.5        fansi_0.5.0       
-    ##  [16] lubridate_1.8.0    xml2_1.3.2         codetools_0.2-18  
-    ##  [19] splines_4.1.1      knitr_1.36         Formula_1.2-4     
-    ##  [22] jsonlite_1.7.2     tmaptools_3.1-1    dbplyr_2.1.1      
-    ##  [25] png_0.1-7          compiler_4.1.1     httr_1.4.2        
-    ##  [28] backports_1.2.1    assertthat_0.2.1   fastmap_1.1.0     
-    ##  [31] cli_3.0.1          s2_1.0.7           htmltools_0.5.2   
-    ##  [34] tools_4.1.1        gtable_0.3.0       glue_1.4.2        
-    ##  [37] wk_0.5.0           tables_0.9.6       Rcpp_1.0.7        
-    ##  [40] cellranger_1.1.0   raster_3.5-2       vctrs_0.3.8       
-    ##  [43] nlme_3.1-152       svglite_2.0.0      leafsync_0.1.0    
-    ##  [46] crosstalk_1.1.1    lwgeom_0.2-8       xfun_0.27         
-    ##  [49] openxlsx_4.2.4     rvest_1.0.2        lifecycle_1.0.1   
-    ##  [52] XML_3.99-0.8       terra_1.4-11       srvyr_1.1.0       
-    ##  [55] scales_1.1.1       vroom_1.5.5        hms_1.1.1         
-    ##  [58] parallel_4.1.1     RColorBrewer_1.1-2 yaml_2.2.1        
-    ##  [61] curl_4.3.2         stringi_1.7.5      highr_0.9         
-    ##  [64] checkmate_2.0.0    e1071_1.7-9        zip_2.2.0         
-    ##  [67] repr_1.1.3         rlang_0.4.12       pkgconfig_2.0.3   
-    ##  [70] systemfonts_1.0.3  evaluate_0.14      lattice_0.20-45   
-    ##  [73] labeling_0.4.2     htmlwidgets_1.5.4  bit_4.0.4         
-    ##  [76] tidyselect_1.1.1   here_1.0.1         magrittr_2.0.1    
-    ##  [79] R6_2.5.1           generics_0.1.1     DBI_1.1.1         
-    ##  [82] mgcv_1.8-38        pillar_1.6.4       haven_2.4.3       
-    ##  [85] foreign_0.8-81     withr_2.4.2        units_0.7-2       
-    ##  [88] stars_0.5-3        abind_1.4-5        sp_1.4-5          
-    ##  [91] modelr_0.1.8       crayon_1.4.1       KernSmooth_2.23-20
-    ##  [94] utf8_1.2.2         tzdb_0.1.2         rmarkdown_2.11    
-    ##  [97] readxl_1.3.1       data.table_1.14.2  reprex_2.0.1      
-    ## [100] digest_0.6.28      classInt_0.4-3     webshot_0.5.2     
-    ## [103] munsell_0.5.0      viridisLite_0.4.0  skimr_2.1.3       
-    ## [106] mitools_2.4
+    ##   [4] class_7.3-19       rprojroot_2.0.2    leaflet_2.0.4.1   
+    ##   [7] base64enc_0.1-3    fs_1.5.0           dichromat_2.0-0   
+    ##  [10] rstudioapi_0.13    proxy_0.4-26       farver_2.1.0      
+    ##  [13] bit64_4.0.5        fansi_0.5.0        lubridate_1.8.0   
+    ##  [16] xml2_1.3.2         codetools_0.2-18   splines_4.1.2     
+    ##  [19] knitr_1.36         Formula_1.2-4      jsonlite_1.7.2    
+    ##  [22] tmaptools_3.1-1    dbplyr_2.1.1       png_0.1-7         
+    ##  [25] compiler_4.1.2     httr_1.4.2         backports_1.3.0   
+    ##  [28] assertthat_0.2.1   fastmap_1.1.0      cli_3.1.0         
+    ##  [31] s2_1.0.7           htmltools_0.5.2    tools_4.1.2       
+    ##  [34] gtable_0.3.0       glue_1.4.2         wk_0.5.0          
+    ##  [37] tables_0.9.6       Rcpp_1.0.7         cellranger_1.1.0  
+    ##  [40] raster_3.5-2       vctrs_0.3.8        nlme_3.1-152      
+    ##  [43] svglite_2.0.0      leafsync_0.1.0     crosstalk_1.2.0   
+    ##  [46] lwgeom_0.2-8       xfun_0.28          rvest_1.0.2       
+    ##  [49] lifecycle_1.0.1    XML_3.99-0.8       terra_1.4-11      
+    ##  [52] srvyr_1.1.0        scales_1.1.1       vroom_1.5.5       
+    ##  [55] hms_1.1.1          parallel_4.1.2     RColorBrewer_1.1-2
+    ##  [58] yaml_2.2.1         stringi_1.7.5      highr_0.9         
+    ##  [61] checkmate_2.0.0    e1071_1.7-9        repr_1.1.3        
+    ##  [64] rlang_0.4.12       pkgconfig_2.0.3    systemfonts_1.0.3 
+    ##  [67] evaluate_0.14      lattice_0.20-45    labeling_0.4.2    
+    ##  [70] htmlwidgets_1.5.4  bit_4.0.4          tidyselect_1.1.1  
+    ##  [73] here_1.0.1         magrittr_2.0.1     R6_2.5.1          
+    ##  [76] generics_0.1.1     DBI_1.1.1          mgcv_1.8-38       
+    ##  [79] pillar_1.6.4       haven_2.4.3        withr_2.4.2       
+    ##  [82] units_0.7-2        stars_0.5-3        abind_1.4-5       
+    ##  [85] sp_1.4-5           modelr_0.1.8       crayon_1.4.2      
+    ##  [88] KernSmooth_2.23-20 utf8_1.2.2         tzdb_0.2.0        
+    ##  [91] rmarkdown_2.11     readxl_1.3.1       data.table_1.14.2 
+    ##  [94] reprex_2.0.1       digest_0.6.28      classInt_0.4-3    
+    ##  [97] webshot_0.5.2      munsell_0.5.0      viridisLite_0.4.0 
+    ## [100] skimr_2.1.3        mitools_2.4
