@@ -18,7 +18,7 @@ options(haven.show_pillar_labels = FALSE)  # https://github.com/tidyverse/haven/
 ```
 
 This documents the recoding of World Poll data into the analytical dataset for
-**Global evidence on the selfish rich hypothesis**, and finally subsets the data
+**Global evidence on the selfish rich inequality hypothesis**, and finally subsets the data
 that we actually use.
 
 Se separate readme file for description of each variable that we use.
@@ -111,8 +111,8 @@ in some cases we want to split them into a series of dummy indicators,
 or we would like z-score variants of the variables.
 For income, z-scores are very sensitive to outliers, and to start,
 we want the place in the income distribution within country. 
-I take the rank  of income, and scale the rank such that it is 
-[-0.5, 0.5], with 0.5 being the highest level of income within country
+I take the rank  of income, and scale the rank such that
+higher rank is higher income, and the range is 1.
 The convention I aim for is that there are prefixes to variables to indicate
 the type of variables: "n" for counts, "z" for normalized variables with
 mean zero and unit variance, and "r" for rank variables. 
