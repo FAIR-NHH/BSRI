@@ -28,7 +28,6 @@ used in the different subsets.
 # Variables in external data, `BSRI_external_data`
 
 - iso_a3: The United Nations ISO 3 alpha country code 
-- gpi_gpi: Global Peace Index (2018), with values 1--5: 5 being the least peaceful. 
 - GNI: World Development Indicators for Gross National Income per capita (source: The World Bank). Numbers are given in purchasing power parity units, ($2011). We use the last year available for each country:
   - 2018: Argentina, Australia, Bangladesh, Bolivia, Brazil, Canada, Chile, China, Cameroon, Colombia, Czech Republic, Germany, Ecuador, Egypt, Spain, France, United Kingdom, Croatia, Hungary, Indonesia, India, Israel, Italy, Jordan, Kazakhstan, Kenya, Cambodia, South Korea, Sri Lanka, Morocco, Mexico, Nigeria, Netherlands, Norway, Pakistan, Peru, Philippines, Portugal, Russia, Rwanda, Thailand, Turkey, Uganda, Ukraine, United States, Vietnam, South Africa, Zimbabwe
   - 2017: Algeria, Estonia, Greece, Malawi, Tanzania, Iran, Japan, Venezuela        
@@ -56,12 +55,12 @@ used in the different subsets.
   - law: negative of "Rule of Law"
   - voice_acc: negative of "Voice and accountability"
 - shadow_ec:  Size of the shadow economy as percentage of GDP, 2015, as measured by : Medina and Schneider (2018), extracted from https://www.theglobaleconomy.com/rankings/shadow_economy/ 
-- org_crime: Organized crime from the Quality of the goverment database. Scale 1-7. Question about to what extent organized crime impose costs on businesses. [1 = to a great extent-imposes huge costs; 7 = not at all-imposes no costs]. Original sources: World Economic Forum, Executive Opinion Survey.
+- org_crime: Organized crime from the Quality of the government database. Scale 1-7. Question about to what extent organized crime impose costs on businesses. [1 = to a great extent-imposes huge costs; 7 = not at all-imposes no costs]. Original sources: World Economic Forum, Executive Opinion Survey.
 - HDI: United Nations Development Program, Human Development Index. Data from 2017 extracted from Human Development Index 2020 Statistical Annex, Table 2. "Human Development Index trends, 1990-2019".
 - gpi_gpi: Global Peace Index 2018. From Global Peace Index 2018: Measuring Peace in a Complex World. Scale 1-5 with 5 being the highest level of conflict.
 
 # Variables taken from Gallup World Poll 2018
-A asterisk indicator indicates that the variable is also included in the publicly available subset
+A asterisk indicator indicates that the variable is also included in the publicly available subset.
 
 - iso_a3*: The United Nations ISO 3 alpha country code 
 - wgt*: Population weight
@@ -82,7 +81,7 @@ and poor are unfair."  Coded from 1: Disagree strongly,
 - gov_should_reduce_inequality*: "Do you generally agree, disagree, or neither agree nor disagree with
 this statement: In Norway, the national government should aim to
 reduce the economic differences between the rich and the poor." 
-- WP1219*: Gender of respondent. Coded 1: mle, 2: female. 
+- WP1219*: Gender of respondent. Coded 1: male, 2: female. 
 - WP1220*: Age. Coded as years, but topcoded at 99. 100: refused.
 - WP3117*: Education. Coded 1: Completed elementary education or less, 2: Secondary - 3 year Tertiary secondary education, 3: Completed four years of education beyond secondary education. 4: Don't know, 5: refused.
 - income_2*: Annual household income in international dollars.
