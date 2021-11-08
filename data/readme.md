@@ -10,8 +10,8 @@ The analysis files relies on four different data files.
 2. `WP_selfishness_public.{dta,csv}` Gallup World Poll 2018 data -- publicly available subset.
 3. `WP_selfishness_confidential.rds` Gallup World Poll 2018, the full dataset. Not publicly available per 
    Gallup policy, but "Access to the World Poll Respondent Level Data will be granted to individuals
-representing academic review    boards where necessary for the purposes of
-verification of research undertaken using the Client    commissioned items and
+representing academic review boards where necessary for the purposes of
+verification of research undertaken using the Client commissioned items and
 World Poll Respondent Level Data. All reasonable alternatives must first be
 exhausted with the reviewing body, such as the sharing of topline data. The
 researcher and Client’s Project Manager must notify Gallup in writing of such a
@@ -19,15 +19,14 @@ requirement including a copy of the correspondence from the reviewing body.
 Upon such a request Gallup will grant the reviewer access to the data for a
 limited duration for the sole purpose of review."
 4. `Durante2017.csv` Data from Durante et al (2017) with added manual coding by us of whether the rich are colder than the poor in relevant sample.
+5. `WP_countryids.csv` Coding from World Poll numbering of countries to iso_a3 countrycodes.
 
-
-Below is a full description of the variables
-used in the different subsets. 
+Below is a full description of the variables used in the different subsets. 
 
 
 # Variables in external data, `BSRI_external_data`
 
-- iso_a3: The United Nations ISO 3 alpha country code 
+- iso_a3: Three-letter country codes defined in ISO 3166-1.
 - GNI: World Development Indicators for Gross National Income per capita (source: The World Bank). Numbers are given in purchasing power parity units, ($2011). We use the last year available for each country:
   - 2018: Argentina, Australia, Bangladesh, Bolivia, Brazil, Canada, Chile, China, Cameroon, Colombia, Czech Republic, Germany, Ecuador, Egypt, Spain, France, United Kingdom, Croatia, Hungary, Indonesia, India, Israel, Italy, Jordan, Kazakhstan, Kenya, Cambodia, South Korea, Sri Lanka, Morocco, Mexico, Nigeria, Netherlands, Norway, Pakistan, Peru, Philippines, Portugal, Russia, Rwanda, Thailand, Turkey, Uganda, Ukraine, United States, Vietnam, South Africa, Zimbabwe
   - 2017: Algeria, Estonia, Greece, Malawi, Tanzania, Iran, Japan, Venezuela        
@@ -62,7 +61,7 @@ used in the different subsets.
 # Variables taken from Gallup World Poll 2018
 A asterisk indicator indicates that the variable is also included in the publicly available subset.
 
-- iso_a3*: The United Nations ISO 3 alpha country code 
+- iso_a3: Three-letter country codes defined in ISO 3166-1.
 - wgt*: Population weight
 - more_selfish*: "Do you generally agree, disagree, or neither agree nor disagree with
  this statement: "In (country), one of the main reasons for the rich being
@@ -114,3 +113,9 @@ reduce the economic differences between the rich and the poor."
 - WC_correlation: Reported warmth/competence correlation in Durante (2017).
 - Rich_colder: A yes/no coding of whether the rich are colder than the poor (coded by visual inspection of scatter graphs).
 - SR_comment: Our comment on the visual coding of `Rich_colder`. If any substitution of literal "rich" and "poor" groups was necessary, or if we could not find relevant comparison groups (or the scatter graphs themselves).
+
+# Variables in WP_countryids.csv
+
+- WP5: Gallup numbering of country
+- countrynew: Gallup name of country
+- iso_a3: Three-letter country codes defined in ISO 3166-1.
