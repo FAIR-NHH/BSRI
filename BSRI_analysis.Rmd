@@ -264,6 +264,23 @@ country_bars %>%
 ```
 
 
+How many countries are the two most frequent responses to strongly disagree or strongly agree
+with SRI? 
+
+```{r}
+country_bars %>%
+  group_by(iso_a3) %>% 
+  mutate(rankp = rank(proportion, ties.method="first")) %>%
+  filter(rankp>3) %>%
+  pivot_wider(id_cols = iso_a3, names_from = rankp, names_prefix = "SRI_response_rank", values_from = v) %>%
+  mutate( extreme_disagree = pmin(SRI_response_rank4, SRI_response_rank5)==1,
+          extreme_agree = pmax(SRI_response_rank4, SRI_response_rank5)==5,
+          extreme = extreme_disagree & extreme_agree) %>%
+  with(table(extreme))
+```
+
+
+
 # Between-country variation in beliefs
 
 ```{r}
@@ -534,7 +551,8 @@ table(belief_classification$disagree_crime_amongBSR > 0.5)
 In how many countries is there a at least 30% disagreeing with belief in crime **among** those who believe in SRI?
 
 ```{r}
-table(belief_classification$disagree_crime_amongBSR > 0.3)
+table(belief_classification$disagree_crime_amongBSR > 0.3
+      )
 ```
 
 

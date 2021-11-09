@@ -3,7 +3,7 @@ by Ingvild Almås, Alexander W. Cappelen, Erik Ø. Sørensen and Bertil
 Tungodden
 ================
 Erik Ø. Sørensen
-08 november, 2021
+09 november, 2021
 
 -   [Summaries of SR support and missing
     variables](#summaries-of-sr-support-and-missing-variables)
@@ -6337,7 +6337,7 @@ sessionInfo()
     ## [11] LC_MEASUREMENT=nb_NO.UTF-8 LC_IDENTIFICATION=C       
     ## 
     ## attached base packages:
-    ## [1] grid      stats     graphics  grDevices utils     datasets  methods  
+    ## [1] grid      stats     graphics  grDevices datasets  utils     methods  
     ## [8] base     
     ## 
     ## other attached packages:
@@ -6366,21 +6366,21 @@ sessionInfo()
     ##  [40] raster_3.5-2       vctrs_0.3.8        nlme_3.1-152      
     ##  [43] svglite_2.0.0      leafsync_0.1.0     crosstalk_1.2.0   
     ##  [46] lwgeom_0.2-8       xfun_0.28          rvest_1.0.2       
-    ##  [49] lifecycle_1.0.1    XML_3.99-0.8       terra_1.4-11      
-    ##  [52] srvyr_1.1.0        scales_1.1.1       vroom_1.5.5       
-    ##  [55] hms_1.1.1          parallel_4.1.2     RColorBrewer_1.1-2
-    ##  [58] yaml_2.2.1         stringi_1.7.5      highr_0.9         
-    ##  [61] checkmate_2.0.0    e1071_1.7-9        repr_1.1.3        
-    ##  [64] rlang_0.4.12       pkgconfig_2.0.3    systemfonts_1.0.3 
-    ##  [67] evaluate_0.14      lattice_0.20-45    labeling_0.4.2    
-    ##  [70] htmlwidgets_1.5.4  bit_4.0.4          tidyselect_1.1.1  
-    ##  [73] here_1.0.1         magrittr_2.0.1     R6_2.5.1          
-    ##  [76] generics_0.1.1     DBI_1.1.1          mgcv_1.8-38       
-    ##  [79] pillar_1.6.4       haven_2.4.3        withr_2.4.2       
-    ##  [82] units_0.7-2        stars_0.5-3        abind_1.4-5       
-    ##  [85] sp_1.4-5           modelr_0.1.8       crayon_1.4.2      
-    ##  [88] KernSmooth_2.23-20 utf8_1.2.2         tzdb_0.2.0        
-    ##  [91] rmarkdown_2.11     readxl_1.3.1       data.table_1.14.2 
-    ##  [94] reprex_2.0.1       digest_0.6.28      classInt_0.4-3    
-    ##  [97] webshot_0.5.2      munsell_0.5.0      viridisLite_0.4.0 
-    ## [100] skimr_2.1.3        mitools_2.4
+    ##  [49] lifecycle_1.0.1    renv_0.14.0        XML_3.99-0.8      
+    ##  [52] terra_1.4-11       srvyr_1.1.0        scales_1.1.1      
+    ##  [55] vroom_1.5.5        hms_1.1.1          parallel_4.1.2    
+    ##  [58] RColorBrewer_1.1-2 yaml_2.2.1         stringi_1.7.5     
+    ##  [61] highr_0.9          checkmate_2.0.0    e1071_1.7-9       
+    ##  [64] repr_1.1.3         rlang_0.4.12       pkgconfig_2.0.3   
+    ##  [67] systemfonts_1.0.3  evaluate_0.14      lattice_0.20-45   
+    ##  [70] labeling_0.4.2     htmlwidgets_1.5.4  bit_4.0.4         
+    ##  [73] tidyselect_1.1.1   here_1.0.1         magrittr_2.0.1    
+    ##  [76] R6_2.5.1           generics_0.1.1     DBI_1.1.1         
+    ##  [79] mgcv_1.8-38        pillar_1.6.4       haven_2.4.3       
+    ##  [82] withr_2.4.2        units_0.7-2        stars_0.5-3       
+    ##  [85] abind_1.4-5        sp_1.4-5           modelr_0.1.8      
+    ##  [88] crayon_1.4.2       KernSmooth_2.23-20 utf8_1.2.2        
+    ##  [91] tzdb_0.2.0         rmarkdown_2.11     readxl_1.3.1      
+    ##  [94] data.table_1.14.2  reprex_2.0.1       digest_0.6.28     
+    ##  [97] classInt_0.4-3     webshot_0.5.2      munsell_0.5.0     
+    ## [100] viridisLite_0.4.0  skimr_2.1.3        mitools_2.4
