@@ -10,7 +10,7 @@ from Harvard Dataverse:
 
 - Almås, Ingvild; Cappelen, Alexander W.; Sørensen, Erik Ø.; Tungodden, Bertil, 2021, "Global evidence on the selfish rich inequality hypothesis", https://doi.org/10.7910/DVN/ZEGFIT, Harvard Dataverse, V2, UNF:6:n88HFUBLvRkZYyDkT33PHQ== [fileUNF]
 
-The files to be downloaded from here are, in the original format,
+The files to be downloaded from here are, in the original format:
 
 - `BSRI_external_data.dta`: External country level information.
 - `Durante2017.csv`: Visual coding of warmth data in Durante et al (2017), (https://doi.org/10.1073/pnas.1611874114).
@@ -37,3 +37,5 @@ available upon request, other Gallup World Poll variables are subject to licensi
 The R-configuration used for running the analysis is controlled by the R `renv` package (v 0.14.0), 
 with the configuration of all packages documented
 in `renv.lock`, and the relevant configuration automatically loaded by the `.Rprofile`.
+
+The output from the analysis is saved in the repository in `graphs/` and `tables/`
