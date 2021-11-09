@@ -2,10 +2,9 @@
       name:  <unnamed>
        log:  /g4pool/eos/Documents/gits/BSRI/lasso_between.log
   log type:  text
- opened on:  15 Sep 2021, 11:16:33
+ opened on:   9 Nov 2021, 09:03:26
 
 . import delimited using SR_df_attitude_c.csv, delim(",") case(lower)
-(encoding automatically selected: ISO-8859-1)
 (8 vars, 60 obs)
 
 . 
@@ -91,7 +90,7 @@ linear model                         Number of controls           =         20
 
 ------------------------------------------------------------------------------
              |               Robust
-inequality~r | Coefficient  std. err.      z    P>|z|     [95% conf. interval]
+inequality~r |      Coef.   Std. Err.      z    P>|z|     [95% Conf. Interval]
 -------------+----------------------------------------------------------------
      mean_bs |   .8135111   .1113169     7.31   0.000     .5953339    1.031688
 ------------------------------------------------------------------------------
@@ -152,7 +151,7 @@ linear model                         Number of controls           =         20
 
 ------------------------------------------------------------------------------
              |               Robust
-gov_should~y | Coefficient  std. err.      z    P>|z|     [95% conf. interval]
+gov_should~y |      Coef.   Std. Err.      z    P>|z|     [95% Conf. Interval]
 -------------+----------------------------------------------------------------
      mean_bs |   .6063669   .0967946     6.26   0.000      .416653    .7960808
 ------------------------------------------------------------------------------
@@ -167,5 +166,5 @@ Note: Chi-squared test is a Wald test of the coefficients of the variables
       name:  <unnamed>
        log:  /g4pool/eos/Documents/gits/BSRI/lasso_between.log
   log type:  text
- closed on:  15 Sep 2021, 11:16:36
+ closed on:   9 Nov 2021, 09:03:29
 -------------------------------------------------------------------------------
