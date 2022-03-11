@@ -64,7 +64,8 @@ Below is a full description of the variables used in the different subsets.
 All variables included in `WP_selfishness_confidential`. 
 An asterisk indicator indicates that the variable is also included in the publicly available subset `WP_selfishness_public`.
 
-- iso_a3: Three-letter country codes defined in ISO 3166-1.
+- WPID_RANDOM*: identifier allowing linking to licensed Gallu World Poll data.
+- iso_a3*: Three-letter country codes defined in ISO 3166-1.
 - wgt*: Population weight
 - more_selfish*: "Do you generally agree, disagree, or neither agree nor disagree with
  this statement: "In (country), one of the main reasons for the rich being

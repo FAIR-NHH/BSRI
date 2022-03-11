@@ -50,6 +50,21 @@ From Zacc Ritter (Gallup), March 8 2021:
 >     important (WP119), urbanicity (WP14), and whether they are
 >     first-generation immigrants (WP4657)
 
+## Update about World Poll identifiers
+
+In communication with Zacc Ritter at Gallup, 2022-03-11, following up on a contact
+from a party interested in linking the openly available data with privately
+licensed World Poll data 
+
+> > Would it be ok to also update the publicly available subset by including WPID_RANDOM such that everyone with a licensed dataset can download and use it 
+without going through me?
+
+> Definitely, that would be a good idea to include WPID.
+
+Conclusion: Code updated to extract WPID_RANDOM as part of the `WP_selfishness_public` data.
+
+
+
 ## Gallup policy on access to World Poll respondent level data for verification purposes
 
 From communication with Zacc Ritter (Gallup), March 9, 2021:
@@ -70,7 +85,8 @@ From communication with Zacc Ritter (Gallup), March 9, 2021:
 ```{r}
 WP_selfishness_public <- readRDS(here::here("data","WP_selfishness_confidential.rds")) %>%
   filter(in_experiment==TRUE) %>%
-  dplyr::select(iso_a3, # Recoding of WP5 
+  dplyr::select(WPID_RANDOM, # Identifying link to the World Poll.
+                iso_a3, # Recoding of WP5 
                 wgt, # Population weights
                 more_selfish, # From Fairness Across the World module
                 more_criminal, # From Fairness Across the World module
