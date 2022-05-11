@@ -98,6 +98,31 @@ write_dta(WP_selfishness_public, here::here("data", "WP_selfishness_public.dta")
 write_csv(WP_selfishness_public, file=here::here("data", "WP_selfishness_public.csv"))
 ```
 
+# Extracting non-public but sharable subset
+This is the data we are allowed to share with people that are interested in replicating our
+data if they show interest and agree that the data should only be used 
+
+```{r}
+WP_selfishness_request <- readRDS(here::here("data","WP_selfishness_confidential.rds")) %>%
+  filter(in_experiment==TRUE) %>%
+  dplyr::select(WPID_RANDOM, # Identifying link to the World Poll.
+                iso_a3, # Recoding of WP5 
+                wgt, # Population weights
+                more_selfish, # From Fairness Across the World module
+                more_criminal, # From Fairness Across the World module
+                gov_should_reduce_inequality, #From Fairness Across the World module
+                inequality_unfair, # From Fairness Across the World module
+                WP1219, WP1220, WP3117, income_2, WP14,
+                WP12259, WP1223, WP1230, HHsize, EMP_2010, WP119, WP4657
+                ) # Core Gallup World Poll variables
+saveRDS(WP_selfishness_request, file=here::here("data", "WP_selfishness_request.rds"))
+write_dta(WP_selfishness_request, here::here("data", "WP_selfishness_request.dta"))
+```
+
+
+
+
+
 # Session Info
 
 ```{r}

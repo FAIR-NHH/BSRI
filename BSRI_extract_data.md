@@ -1,7 +1,7 @@
 Extracting World Poll data for replication file we can share
 ================
 Erik Ø. Sørensen
-11 mars, 2022
+11 mai, 2022
 
 # Data availability policy
 
@@ -87,13 +87,36 @@ write_dta(WP_selfishness_public, here::here("data", "WP_selfishness_public.dta")
 write_csv(WP_selfishness_public, file=here::here("data", "WP_selfishness_public.csv"))
 ```
 
+# Extracting non-public but sharable subset
+
+This is the data we are allowed to share with people that are interested
+in replicating our data if they show interest and agree that the data
+should only be used
+
+``` r
+WP_selfishness_request <- readRDS(here::here("data","WP_selfishness_confidential.rds")) %>%
+  filter(in_experiment==TRUE) %>%
+  dplyr::select(WPID_RANDOM, # Identifying link to the World Poll.
+                iso_a3, # Recoding of WP5 
+                wgt, # Population weights
+                more_selfish, # From Fairness Across the World module
+                more_criminal, # From Fairness Across the World module
+                gov_should_reduce_inequality, #From Fairness Across the World module
+                inequality_unfair, # From Fairness Across the World module
+                WP1219, WP1220, WP3117, income_2, WP14,
+                WP12259, WP1223, WP1230, HHsize, EMP_2010, WP119, WP4657
+                ) # Core Gallup World Poll variables
+saveRDS(WP_selfishness_request, file=here::here("data", "WP_selfishness_request.rds"))
+write_dta(WP_selfishness_request, here::here("data", "WP_selfishness_request.dta"))
+```
+
 # Session Info
 
 ``` r
 sessionInfo()
 ```
 
-    ## R version 4.1.2 (2021-11-01)
+    ## R version 4.2.0 (2022-04-22)
     ## Platform: x86_64-pc-linux-gnu (64-bit)
     ## Running under: Ubuntu 20.04.4 LTS
     ## 
@@ -113,23 +136,23 @@ sessionInfo()
     ## [1] stats     graphics  grDevices datasets  utils     methods   base     
     ## 
     ## other attached packages:
-    ##  [1] haven_2.4.3     forcats_0.5.1   stringr_1.4.0   dplyr_1.0.7    
-    ##  [5] purrr_0.3.4     readr_2.0.2     tidyr_1.1.4     tibble_3.1.5   
-    ##  [9] ggplot2_3.3.5   tidyverse_1.3.1
+    ##  [1] haven_2.5.0     forcats_0.5.1   stringr_1.4.0   dplyr_1.0.9    
+    ##  [5] purrr_0.3.4     readr_2.1.2     tidyr_1.2.0     tibble_3.1.7   
+    ##  [9] ggplot2_3.3.6   tidyverse_1.3.1
     ## 
     ## loaded via a namespace (and not attached):
-    ##  [1] tidyselect_1.1.1 xfun_0.28        colorspace_2.0-2 vctrs_0.3.8     
-    ##  [5] generics_0.1.1   htmltools_0.5.2  yaml_2.2.1       utf8_1.2.2      
-    ##  [9] rlang_0.4.12     pillar_1.6.4     glue_1.4.2       withr_2.4.2     
-    ## [13] DBI_1.1.1        bit64_4.0.5      dbplyr_2.1.1     modelr_0.1.8    
-    ## [17] readxl_1.3.1     lifecycle_1.0.1  munsell_0.5.0    gtable_0.3.0    
-    ## [21] cellranger_1.1.0 rvest_1.0.2      evaluate_0.14    knitr_1.36      
-    ## [25] tzdb_0.2.0       fastmap_1.1.0    parallel_4.1.2   fansi_0.5.0     
-    ## [29] broom_0.7.10     Rcpp_1.0.7       renv_0.14.0      scales_1.1.1    
-    ## [33] backports_1.3.0  vroom_1.5.5      jsonlite_1.7.2   bit_4.0.4       
-    ## [37] fs_1.5.0         hms_1.1.1        digest_0.6.28    stringi_1.7.5   
-    ## [41] rprojroot_2.0.2  grid_4.1.2       here_1.0.1       cli_3.1.0       
-    ## [45] tools_4.1.2      magrittr_2.0.1   crayon_1.4.2     pkgconfig_2.0.3 
-    ## [49] ellipsis_0.3.2   xml2_1.3.2       reprex_2.0.1     lubridate_1.8.0 
-    ## [53] rstudioapi_0.13  assertthat_0.2.1 rmarkdown_2.11   httr_1.4.2      
-    ## [57] R6_2.5.1         compiler_4.1.2
+    ##  [1] tidyselect_1.1.2 xfun_0.31        colorspace_2.0-3 vctrs_0.4.1     
+    ##  [5] generics_0.1.2   htmltools_0.5.2  yaml_2.3.5       utf8_1.2.2      
+    ##  [9] rlang_1.0.2      pillar_1.7.0     withr_2.5.0      glue_1.6.2      
+    ## [13] DBI_1.1.2        bit64_4.0.5      dbplyr_2.1.1     modelr_0.1.8    
+    ## [17] readxl_1.4.0     lifecycle_1.0.1  munsell_0.5.0    gtable_0.3.0    
+    ## [21] cellranger_1.1.0 rvest_1.0.2      evaluate_0.15    knitr_1.39      
+    ## [25] tzdb_0.3.0       fastmap_1.1.0    parallel_4.2.0   fansi_1.0.3     
+    ## [29] broom_0.8.0      renv_0.14.0      backports_1.4.1  scales_1.2.0    
+    ## [33] vroom_1.5.7      jsonlite_1.8.0   bit_4.0.4        fs_1.5.2        
+    ## [37] hms_1.1.1        digest_0.6.29    stringi_1.7.6    rprojroot_2.0.3 
+    ## [41] grid_4.2.0       here_1.0.1       cli_3.3.0        tools_4.2.0     
+    ## [45] magrittr_2.0.3   crayon_1.5.1     pkgconfig_2.0.3  ellipsis_0.3.2  
+    ## [49] xml2_1.3.3       reprex_2.0.1     lubridate_1.8.0  assertthat_0.2.1
+    ## [53] rmarkdown_2.14   httr_1.4.3       rstudioapi_0.13  R6_2.5.1        
+    ## [57] compiler_4.2.0
